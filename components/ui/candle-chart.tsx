@@ -53,7 +53,7 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
          }
 
          limitSeriesRef.current[label].update({
-            time: 0,
+            time: 0 as Time,
             value: Number(price)
          });
       },
