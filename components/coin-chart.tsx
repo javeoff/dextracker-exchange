@@ -1,13 +1,13 @@
 "use client"
 
 import { useParams } from 'next/navigation';
-import { TradesChart } from './ui/trades-chart';
+import { SubscribeData, TradesChart } from './ui/trades-chart';
 import { useCallback } from 'react';
 
 export function CoinChart() {
   const { symbol } = useParams();
 
-  const subscribe = useCallback((cb) => {
+  const subscribe = useCallback((cb: (data: SubscribeData) => void) => {
     const ws = new WebSocket('wss://api.cryptoscan.pro/quote?symbol=' + symbol)
     ws.onmessage = (msg) => {
       const data = JSON.parse(msg.data);

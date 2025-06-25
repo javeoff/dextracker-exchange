@@ -25,7 +25,7 @@ interface Position {
   openPrice: number;
 }
 
-interface SubscribeData {
+export interface SubscribeData {
   symbol: string;
   exchange: string;
   price: number;
