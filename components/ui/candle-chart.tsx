@@ -1,4 +1,4 @@
-import { createChart, CrosshairMode, IChartApi, ISeriesApi, LineStyle, Time, CandlestickSeries, LineSeries, BaselineSeries } from "lightweight-charts";
+import { createChart, CrosshairMode, IChartApi, ISeriesApi, LineStyle, Time, CandlestickSeries, LineSeries } from "lightweight-charts";
 import { forwardRef, useImperativeHandle, useRef, useEffect } from "react";
 import { formatPrice } from "./price-formatter";
 import { useTheme } from "next-themes";

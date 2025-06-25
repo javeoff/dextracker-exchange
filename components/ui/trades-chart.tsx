@@ -177,8 +177,8 @@ export function TradesChart({
     const action = determinePositionAction(price);
     if (!action) return;
 
-    const defaultAmount = 0.01;
-    const amount = action.isClosing ? action.existingPosition?.amount : defaultAmount;
+    // const defaultAmount = 0.01;
+    // const amount = action.isClosing ? action.existingPosition?.amount : defaultAmount;
 
     try {
       toast.loading(`${action.isClosing ? 'Closing' : 'Opening'} ${action.type === 'buy' ? 'long' : 'short'} position...`);

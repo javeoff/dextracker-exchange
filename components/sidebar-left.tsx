@@ -2,31 +2,17 @@
 
 import * as React from "react"
 import {
-  AudioWaveform,
-  Blocks,
-  Calendar,
-  ChevronDown,
-  Command,
-  Home,
-  Inbox,
-  MessageCircleQuestion,
-  Search,
-  Settings2,
-  Sparkles,
-  Trash2,
+    AudioWaveform, Command,
+    Home
 } from "lucide-react"
 
-import { NavFavorites } from "@/components/nav-favorites"
 import { NavMain } from "@/components/nav-main"
-import { NavSecondary } from "@/components/nav-secondary"
-import { NavWorkspaces } from "@/components/nav-workspaces"
-import { TeamSwitcher } from "@/components/team-switcher"
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenuButton,
-  SidebarRail,
+    Sidebar,
+    SidebarContent,
+    SidebarHeader,
+    SidebarMenuButton,
+    SidebarRail,
 } from "@/components/ui/sidebar"
 
 // This is sample data.
