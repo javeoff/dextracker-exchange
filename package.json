@@ -12,6 +12,7 @@
     "@bonfida/spl-name-service": "^3.0.11",
     "@custom-react-hooks/use-debounce": "^1.5.1",
     "@custom-react-hooks/use-throttle": "^1.5.1",
+    "@intercom/messenger-js-sdk": "^0.0.14",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-collapsible": "^1.1.11",
     "@radix-ui/react-dialog": "^1.1.14",

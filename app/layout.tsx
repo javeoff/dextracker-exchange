@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/header";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ThemeProvider } from "next-themes";
+import Intercom from '@intercom/messenger-js-sdk';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,6 +26,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  Intercom({
+    app_id: 'kk1hmj9y',
+  });
+
   return (
     <html lang="en">
       <body
