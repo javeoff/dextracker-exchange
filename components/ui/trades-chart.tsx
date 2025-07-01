@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { getBigNumber } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "./sidebar";
-import { Chart } from "./candle-chart";
+import { CandleData, Chart } from "./candle-chart";
 import { formatPrice } from "./price-formatter";
 import { Button } from "./button";
 import { SelectValue, SelectContent, SelectItem, SelectTrigger, Select } from "@/components/ui/select";
@@ -43,7 +43,6 @@ export interface SubscribeData {
 
 interface Props {
   symbol: string;
-  history: Point[];
   openPositions: Position[];
   limitOrders: Position[];
   subscribe: (cb: (data: SubscribeData) => void) => void;
@@ -52,12 +51,12 @@ interface Props {
 
 export function TradesChart({
   symbol,
-  history,
   openPositions = [],
   limitOrders = [],
   subscribe,
   getDepthVolume,
 }: Props) {
+  const [initialData, setInitialData] = useState<CandleData[]>([]);
   const availableExchangesRef = useRef<Set<string>>(new Set())
   const [exchange, setExchange] = useState<string>();
   const [timeframe, setTimeframe] = useState<'1m' | '5m' | '15m' | '1h'>('1m');
@@ -71,13 +70,27 @@ export function TradesChart({
     localStorage.setItem('dexExchange', exchange);
   }, [exchange])
 
-  const initialData = useMemo(() => {
-    if (!exchange) {
-      return {};
-    }
 
-    return Object.fromEntries((history || []).map((p) => [p.timestamp, Number(p[exchange as keyof Point])]));
-  }, [history, exchange]);
+  useEffect(() => {
+    const loadChart = async () => {
+      const timeTo = '0m';
+      const network = 'sol';
+      const res = await fetch(`https://api.cryptoscan.pro/chart?address=${symbol}&network=${network}&timeTo=${timeTo}`)
+      const data = await res.json();
+      setInitialData(
+        data.map((d: Record<string, number | string>) => ({
+          ...d,
+          time: d.time,
+          open: Number(d.open),
+          close: Number(d.close),
+          high: Number(d.high),
+          low: Number(d.low),
+          volume: Number(d.volume),
+        }))
+      );
+    }
+    loadChart();
+  }, [symbol])
 
   useEffect(() => {
     if (!chartRef.current) {

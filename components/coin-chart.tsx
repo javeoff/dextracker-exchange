@@ -15,8 +15,7 @@ export function CoinChart() {
     <>
       <div className="px-4 border-b">
         <TradesChart
-          symbol={symbol as string || 'BTC'}
-          history={[]}
+          symbol={symbol.replace('/', '') as string || 'BTC'}
           openPositions={[]}
           limitOrders={[]}
           subscribe={subscribe}
