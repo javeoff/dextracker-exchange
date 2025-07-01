@@ -46,14 +46,14 @@ export function Header() {
                 </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link href="https://docs.cryptoscan.pro" legacyBehavior passHref>
+                <Link href="https://docs.cryptoscan.pro" legacyBehavior passHref target="_blank">
                   <NavigationMenuLink className="px-4 py-2 text-sm font-medium hover:underline">
                     Docs
                   </NavigationMenuLink>
                 </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link href="https://docs.cryptoscan.pro/changelog" legacyBehavior passHref>
+                <Link href="https://docs.cryptoscan.pro/changelog" legacyBehavior passHref target="_blank">
                   <NavigationMenuLink className="px-4 py-2 text-sm font-medium hover:underline">
                     Changelog
                   </NavigationMenuLink>
