@@ -1,15 +1,15 @@
 "use client"
 
-import { useParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { TradesChart } from './ui/trades-chart';
 import { TradesStats } from './trades-stats';
 import { TradesTable } from './trades-table';
 import { getQuoteSubscription } from '@/lib/getQuoteSubscription';
 
 export function CoinChart() {
-  const { symbol } = useParams();
+  const symbol = usePathname();
 
-  const { subscribe } = getQuoteSubscription(symbol as string)
+  const { subscribe } = getQuoteSubscription(symbol.replace('/', '') as string)
 
   return (
     <>

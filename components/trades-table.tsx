@@ -231,7 +231,7 @@ export function TradesTable({ subscribe }: Props) {
           newData[index] = d
           return newData
         } else {
-          return [d, ...prev.slice(0, 50)]
+          return [d, ...prev]
         }
       })
     })

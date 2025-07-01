@@ -5,25 +5,27 @@ import { ADDRESS_SYMBOLS, cn, getBigNumber, getPrice } from "@/lib/utils";
 import { ChangeIcon } from "./ui/change-icon";
 import { useState, useEffect, useMemo } from "react";
 import { getQuoteSubscription } from "@/lib/getQuoteSubscription";
-import { usePathname } from "next/navigation";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { BigNumber } from "bignumber.js";
 import { CommandSearch } from "./command-search";
 import { SubscribeData } from "./ui/trades-chart";
 import { CoinAvatar } from "./CoinAvatar";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { usePathname } from "next/navigation";
 
 export function Swap() {
-  const symbolPath = usePathname();
-  const symbol = symbolPath.replace('/', '');
+  const path = usePathname()
+  const [symbol, setSymbol] = useState<string>();
   const [markets, setMarkets] = useState<Record<string, SubscribeData>>({});
   const [exchange, setExchange] = useState<string>();
-  const { subscribe } = getQuoteSubscription(symbol as string)
+  const { subscribe } = getQuoteSubscription(symbol || path.replace('/', ''));
   const [fromAmount, setFromAmount] = useState<number>();
   const [toAmount, setToAmount] = useState<number>();
 
   useEffect(() => {
     const unsubscribe = subscribe((data) => {
+      setSymbol((prev) => !prev ? data.symbol : prev)
+
       if (data.exchange === exchange && exchange && fromAmount) {
         setToAmount(new BigNumber(fromAmount).div(data.price).toNumber())
       }
@@ -37,7 +39,7 @@ export function Swap() {
     return () => {
       unsubscribe()
     }
-  }, [subscribe, exchange, fromAmount])
+  }, [subscribe, exchange, fromAmount, setSymbol])
 
   useEffect(() => {
     if (!exchange || !markets[exchange] || !fromAmount || !exchange) {
@@ -49,8 +51,8 @@ export function Swap() {
   const [balances, setBalances] = useState<Record<string, { uiAmount: number }>>({});
   const [fromAddress, setFromAddress] = useState<string | null>('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v')
   const [toAddress, setToAddress] = useState<string | null>(localStorage.getItem('dexAddress'));
-  const [fromSymbol, setFromSymbol] = useState<string | null>(ADDRESS_SYMBOLS[fromAddress!] || symbol)
-  const [toSymbol, setToSymbol] = useState<string | null>(ADDRESS_SYMBOLS[toAddress!] || symbol);
+  const [fromSymbol, setFromSymbol] = useState<string | null>(ADDRESS_SYMBOLS[fromAddress!] || symbol!)
+  const [toSymbol, setToSymbol] = useState<string | null>(ADDRESS_SYMBOLS[toAddress!] || symbol!);
   const fromBalance = useMemo(() => balances[fromAddress!]?.uiAmount || 0, [fromAddress, balances]);
   const toBalance = useMemo(() => balances[toAddress!]?.uiAmount || 0, [toAddress, balances]);
   const debouncedFromAmount = useDebouncedValue(fromAmount!, 150)

@@ -3,16 +3,28 @@
 import { CoinChart } from "@/components/coin-chart";
 import { Separator } from "@/components/ui/separator";
 import {
-  SidebarInset
+    SidebarInset
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
 import { SidebarRight } from "@/components/sidebar-right";
+import { useState, useEffect } from "react";
+import { getQuoteSubscription } from "@/lib/getQuoteSubscription";
 
 
 export default function Page() {
-  const symbolPath = usePathname();
-  const symbol = symbolPath.replace('/', '');
+  const path = usePathname()
+  const [symbol, setSymbol] = useState<string>();
+  const { subscribe } = getQuoteSubscription(path.replace('/', ''));
+
+  useEffect(() => {
+    const unsubscribe = subscribe((data) => {
+      setSymbol((prev) => !prev ? data.symbol : prev)
+    })
+    return () => {
+      unsubscribe()
+    }
+  }, [subscribe, setSymbol])
 
   return (
     <>
@@ -23,7 +35,7 @@ export default function Page() {
               <div className="p-2">
                 <Avatar>
                   <AvatarImage src="/" />
-                  <AvatarFallback>{symbol.slice(0, 2)}</AvatarFallback>
+                  <AvatarFallback>{symbol?.slice(0, 2)}</AvatarFallback>
                 </Avatar>
               </div>
               <div className="h-full flex items-center">

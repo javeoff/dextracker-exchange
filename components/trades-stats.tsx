@@ -13,6 +13,12 @@ export function TradesStats({ subscribe }: Props) {
     const timers: NodeJS.Timeout[] = [];
 
     subscribe((data: SubscribeData) => {
+      if ('symbol' in data) {
+        localStorage.setItem('symbol', data.symbol)
+      }
+      if ('address' in data) {
+        localStorage.setItem('dexAddress', data.address)
+      }
       if (!data.exchange) return;
 
       const volume = data.volume;

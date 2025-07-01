@@ -2,7 +2,6 @@ import { SubscribeData } from '@/components/ui/trades-chart';
 import memoize from 'memoizee';
 
 function createSubscription(symbol: string) {
-  localStorage.setItem('symbol', symbol);
   const ws = new WebSocket(`wss://api.cryptoscan.pro/quote?symbol=${symbol}`);
   const subscribers = new Set<(data: SubscribeData) => void>();
 
