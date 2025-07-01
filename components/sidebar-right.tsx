@@ -1,15 +1,10 @@
 import * as React from "react"
-import { Plus } from "lucide-react"
 
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem, SidebarSeparator
+  Sidebar,
+  SidebarContent
 } from "@/components/ui/sidebar"
+import { Swap } from "./swap"
 
 export function SidebarRight({
   ...props
@@ -17,24 +12,12 @@ export function SidebarRight({
   return (
     <Sidebar
       collapsible="none"
-      className="sticky top-0 hidden h-svh border-l lg:flex"
+      className="sticky top-0 hidden h-svh border-l lg:flex w-(--sidebar-width)"
       {...props}
     >
-      <SidebarHeader className="border-sidebar-border h-16 border-b">
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarSeparator className="mx-0" />
+      <SidebarContent className="my-5 px-2">
+        <Swap />
       </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton>
-              <Plus />
-              <span>New Calendar</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
     </Sidebar>
   )
 }

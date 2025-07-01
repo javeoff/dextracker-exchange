@@ -5,11 +5,12 @@ import { CirclePlusIcon, XIcon } from "lucide-react";
 import { BigNumber } from "bignumber.js";
 import { toast } from "sonner";
 import { getBigNumber } from "@/lib/utils";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@radix-ui/react-select";
+import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "./sidebar";
 import { Chart } from "./candle-chart";
 import { formatPrice } from "./price-formatter";
 import { Button } from "./button";
+import { SelectValue, SelectContent, SelectItem, SelectTrigger, Select } from "@/components/ui/select";
 
 export interface Point {
   timestamp: string;
@@ -29,6 +30,15 @@ export interface SubscribeData {
   symbol: string;
   exchange: string;
   price: number;
+  volume: number;
+  type: string;
+  txn?: string;
+  tags?: string[]
+  address: string;
+  pnl: number;
+  bought: number;
+  sold: number;
+  boughtAt: number;
 }
 
 interface Props {
@@ -38,7 +48,6 @@ interface Props {
   limitOrders: Position[];
   subscribe: (cb: (data: SubscribeData) => void) => void;
   getDepthVolume: (symbol: string, top?: number, left?: number, display?: string) => number;
-  mainExchange: string;
 }
 
 export function TradesChart({
@@ -48,19 +57,24 @@ export function TradesChart({
   limitOrders = [],
   subscribe,
   getDepthVolume,
-  mainExchange,
 }: Props) {
   const availableExchangesRef = useRef<Set<string>>(new Set())
-  const [exchange, setExchange] = useState<string>(mainExchange);
+  const [exchange, setExchange] = useState<string>();
   const [timeframe, setTimeframe] = useState<'1m' | '5m' | '15m' | '1h'>('1m');
   // eslint-disable-next-line 
   const chartRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (!exchange) {
+      return;
+    }
+    localStorage.setItem('dexExchange', exchange);
+  }, [exchange])
 
   const initialData = useMemo(() => {
     if (!exchange) {
       return {};
     }
-    console.log('h', history)
 
     return Object.fromEntries((history || []).map((p) => [p.timestamp, Number(p[exchange as keyof Point])]));
   }, [history, exchange]);
@@ -213,13 +227,18 @@ export function TradesChart({
   }, []);
 
   useEffect(() => {
-    if (!exchange || !symbol) {
+    if (!symbol) {
       return
     }
+    let exchangeLoaded = false;
     subscribe((data: SubscribeData) => {
       if (availableExchangesRef.current) {
         currentPriceRef.current = data.price;
         availableExchangesRef.current.add(data.exchange);
+        if (!exchangeLoaded && data.exchange && !exchange) {
+          setExchange(data.exchange)
+          exchangeLoaded = true;
+        }
       }
       if (!chartRef.current) {
         return
@@ -237,9 +256,9 @@ export function TradesChart({
     <div
       className="relative"
     >
-      <div className="flex mb-2 justify-between px-4 py-2">
-        <div className="flex gap-4">
-          <div className="flex gap-2 border-r pr-4 border-neutral-700">
+      <div className="flex mb-1 justify-between px-4 pt-2">
+        <div className="flex items-center gap-4">
+          <div className="flex gap-2">
             <Button
               variant="ghost"
               onClick={() => setTimeframe('1m')}
@@ -273,13 +292,17 @@ export function TradesChart({
               1h
             </Button>
           </div>
+          <Separator
+            orientation="vertical"
+            className="data-[orientation=vertical]:h-4"
+          />
 
-          <div className="pr-4 border-neutral-700">
+          <div className="border-neutral-700">
             <Select
               value={exchange}
               onValueChange={setExchange}
             >
-              <SelectTrigger className="h-4 p-0 border-0 text-xs">
+              <SelectTrigger className="p-0 px-2 border-0 text-xs" size="sm">
                 <SelectValue placeholder="Select Exchange" />
               </SelectTrigger>
               <SelectContent>

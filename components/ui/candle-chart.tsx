@@ -223,12 +223,12 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
       });
 
       candleSeriesRef.current = chartApiRef.current.addSeries(CandlestickSeries, {
-         upColor: '#3f9383',
-         downColor: '#cb485e',
-         borderUpColor: '#4caf50',
-         borderDownColor: '#f44336',
-         wickUpColor: '#4caf50',
-         wickDownColor: '#f44336',
+         upColor: '#535ef9',
+         downColor: '#ef2770',
+         borderUpColor: '#535ef9',
+         borderDownColor: '#ef2770',
+         wickUpColor: '#535ef9',
+         wickDownColor: '#ef2770',
          priceFormat: {
             type: 'custom',
             formatter: (price: number) => formatPrice(price),

@@ -1,41 +1,46 @@
-import { CoinChart } from "@/components/coin-chart"
-import { SidebarRight } from "@/components/sidebar-right"
+"use client";
+
+import { CoinChart } from "@/components/coin-chart";
+import { Separator } from "@/components/ui/separator";
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
-import {
-  SidebarInset, SidebarTrigger
-} from "@/components/ui/sidebar"
+  SidebarInset
+} from "@/components/ui/sidebar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { usePathname } from "next/navigation";
+import { SidebarRight } from "@/components/sidebar-right";
+
 
 export default function Page() {
+  const symbolPath = usePathname();
+  const symbol = symbolPath.replace('/', '');
+
   return (
     <>
-      <SidebarInset>
-        <header className="bg-background sticky top-0 flex h-14 shrink-0 items-center gap-2">
-          <div className="flex flex-1 items-center gap-2 px-3">
-            <SidebarTrigger />
+      <SidebarInset className="overflow-hidden">
+        <header className="bg-background sticky top-0 flex h-14 shrink-0 items-center gap-2 border border-bottom">
+          <div className="flex flex-1 items-center h-10 gap-4 px-4">
+            <div className="flex gap-2 items-center">
+              <div className="p-2">
+                <Avatar>
+                  <AvatarImage src="/" />
+                  <AvatarFallback>{symbol.slice(0, 2)}</AvatarFallback>
+                </Avatar>
+              </div>
+              <div className="h-full flex items-center">
+                <div className="font-medium">{symbol}</div>
+              </div>
+            </div>
             <Separator
               orientation="vertical"
               className="mr-2 data-[orientation=vertical]:h-4"
             />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbPage className="line-clamp-1">
-                    Project Management & Task Tracking
-                  </BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4">
+
+        <div className="flex flex-1 flex-col gap-4">
           <CoinChart />
         </div>
+
       </SidebarInset>
       <SidebarRight />
     </>
