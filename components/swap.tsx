@@ -201,8 +201,8 @@ export function Swap() {
             onClick={() => {
               setFromAddress(toAddress);
               setToAddress(fromAddress);
-              setFromSymbol(ADDRESS_SYMBOLS[toAddress!] || symbol);
-              setToSymbol(ADDRESS_SYMBOLS[fromAddress!] || symbol);
+              setFromSymbol(ADDRESS_SYMBOLS[toAddress!] || symbol!);
+              setToSymbol(ADDRESS_SYMBOLS[fromAddress!] || symbol!);
               setFromAmount(Number(getPrice(toAmount!)));
               setToAmount(Number(getPrice(fromAmount!)));
             }}

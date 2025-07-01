@@ -1,4 +1,5 @@
 "use client";
+
 import { WalletModalProvider } from "@/provider/wallet-modal";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
@@ -9,17 +10,59 @@ import { WalletMultiButton } from "./wallet-multi-button";
 import { CommandSearch } from "./command-search";
 import { Separator } from "./ui/separator";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+} from "@/components/ui/navigation-menu";
 
 export function Header() {
   const pathname = usePathname();
   const network = WalletAdapterNetwork.Mainnet;
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-  console.log('pathname', pathname)
+
   return (
-    <div className={`w-full ${pathname !== '/' ? 'border border-b' : ''} fixed top-0 z-5 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60`}>
-      <div className="w-full flex justify-between px-5 py-1">
-        <div>
+    <div
+      className={`w-full ${pathname !== "/" ? "border border-b" : ""
+        } fixed top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60`}
+    >
+      <div className="w-full flex justify-between px-8 py-1 items-center">
+        <div className="flex items-center gap-6">
+          <Link href="https://cryptoscan.pro" className="block">
+            <Image src="/logo.png" alt="logo" width={35} height={12} />
+          </Link>
+
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <Link href="/" legacyBehavior passHref>
+                  <NavigationMenuLink className="px-4 py-2 text-sm font-medium hover:underline">
+                    Trending
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link href="https://docs.cryptoscan.pro" legacyBehavior passHref>
+                  <NavigationMenuLink className="px-4 py-2 text-sm font-medium hover:underline">
+                    Docs
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link href="https://docs.cryptoscan.pro/changelog" legacyBehavior passHref>
+                  <NavigationMenuLink className="px-4 py-2 text-sm font-medium hover:underline">
+                    Changelog
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
         </div>
+
         <div className="flex gap-2 items-center">
           <CommandSearch />
           <ModeToggle />
@@ -37,5 +80,5 @@ export function Header() {
         </div>
       </div>
     </div>
-  )
+  );
 }

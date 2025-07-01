@@ -3,17 +3,17 @@
 import { type DialogProps } from "@radix-ui/react-dialog"
 import { cn, getBigNumber, getExchangeName } from "@/lib/utils"
 import {
-    Command,
-    CommandEmpty, CommandItem,
-    CommandInput, CommandList
+  Command,
+  CommandEmpty, CommandItem,
+  CommandInput, CommandList
 } from "./ui/command"
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "./ui/dialog"
 import { Button } from "./ui/button"
 import { useDebounce } from '@custom-react-hooks/use-debounce'
@@ -21,6 +21,7 @@ import { useIsMac } from "@/hooks/use-is-mac"
 import { useState, useEffect, ReactNode } from "react"
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 
 interface Coin {
   id: string;
@@ -40,6 +41,7 @@ export function CommandSearch({
   children?: ReactNode
   onClick?: (coin: Coin) => void;
 }) {
+  const router = useRouter();
   const isMac = useIsMac()
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState<string>();
@@ -110,10 +112,15 @@ export function CommandSearch({
                 key={coin.id}
                 value={coin.id}
                 className="cursor-pointer flex justify-between mt-2"
-                  onSelect={() => {
-                    onClick?.(coin)
-                    setOpen(false)
-                  }}
+                onSelect={() => {
+                  setOpen(false)
+                  if (onClick) {
+                    onClick(coin)
+                  }
+                  else {
+                    router.push('/' + coin.id)
+                  }
+                }}
               >
                 <div className="flex items-center gap-3">
                   <Avatar className="rounded-lg w-[30px] h-[30px]">

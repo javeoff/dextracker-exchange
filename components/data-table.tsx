@@ -64,7 +64,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="rounded-md">
-      <Table containerClassName="overflow-y-scroll max-h-screen">
+      <Table containerClassName="overflow-y-scroll px-5 max-h-screen">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
