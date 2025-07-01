@@ -2,33 +2,31 @@
 
 import { CoinChart } from "@/components/coin-chart";
 import { Separator } from "@/components/ui/separator";
-import {
-    SidebarInset
-} from "@/components/ui/sidebar";
+import { SidebarInset } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
 import { SidebarRight } from "@/components/sidebar-right";
 import { useState, useEffect } from "react";
 import { getQuoteSubscription } from "@/lib/getQuoteSubscription";
-
+import { Swap } from "@/components/swap";
 
 export default function Page() {
-  const path = usePathname()
+  const path = usePathname();
   const [symbol, setSymbol] = useState<string>();
-  const { subscribe } = getQuoteSubscription(path.replace('/', ''));
+  const { subscribe } = getQuoteSubscription(path.replace("/", ""));
 
   useEffect(() => {
     const unsubscribe = subscribe((data) => {
-      setSymbol((prev) => !prev ? data.symbol : prev)
-    })
+      setSymbol((prev) => (!prev ? data.symbol : prev));
+    });
     return () => {
-      unsubscribe()
-    }
-  }, [subscribe, setSymbol])
+      unsubscribe();
+    };
+  }, [subscribe, setSymbol]);
 
   return (
     <>
-      <SidebarInset className="overflow-hidden">
+      <SidebarInset className="overflow-hidden mt-15 md:mt-0">
         <header className="bg-background sticky top-0 flex h-14 shrink-0 items-center gap-2 border border-bottom">
           <div className="flex flex-1 items-center h-10 gap-4 px-4">
             <div className="flex gap-2 items-center">
@@ -49,12 +47,17 @@ export default function Page() {
           </div>
         </header>
 
-        <div className="flex flex-1 flex-col gap-4">
-          <CoinChart />
-        </div>
+        <div className="flex flex-1 flex-col gap-4 my-5 md:my-o">
+          <div className="block lg:hidden px-4">
+            <Swap />
+          </div>
 
+          <CoinChart />
+
+        </div>
       </SidebarInset>
+
       <SidebarRight />
     </>
-  )
+  );
 }

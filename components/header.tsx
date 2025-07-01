@@ -32,7 +32,62 @@ export function Header() {
       className={`w-full ${pathname !== "/" ? "border border-b" : ""
         } fixed top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60`}
     >
-      <div className="w-full flex justify-between px-8 py-1 items-center">
+      {/* Mobile layout */}
+      <div className="flex flex-col px-4 py-2 space-y-3 md:hidden">
+        <div className="flex justify-between items-center">
+          <Link href="https://cryptoscan.pro" className="block">
+            <Image src={theme === 'dark' ? "/logo.png" : "/logo-white.png"} alt="logo" width={35} height={12} />
+          </Link>
+
+          <NavigationMenu>
+            <NavigationMenuList className="flex gap-2">
+              <NavigationMenuItem>
+                <Link href="/" legacyBehavior passHref>
+                  <NavigationMenuLink className="text-sm font-medium hover:underline">
+                    Trending
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link href="https://docs.cryptoscan.pro" target="_blank">
+                  <NavigationMenuLink className="text-sm font-medium hover:underline">
+                    Docs
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link href="https://docs.cryptoscan.pro/changelog" target="_blank">
+                  <NavigationMenuLink className="text-sm font-medium hover:underline">
+                    Changelog
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+        </div>
+
+        {/* 2. Поиск слева (на всю ширину), кошелек справа */}
+        <div className="flex justify-between items-center gap-2">
+          <div className="flex-1">
+            <CommandSearch />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <ModeToggle />
+            <Separator orientation="vertical" className="h-5" />
+            <ConnectionProvider endpoint={endpoint}>
+              <WalletProvider wallets={[]} autoConnect>
+                <WalletModalProvider>
+                  <WalletMultiButton />
+                </WalletModalProvider>
+              </WalletProvider>
+            </ConnectionProvider>
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop layout */}
+      <div className="hidden md:flex justify-between px-8 py-1 items-center">
         <div className="flex items-center gap-6">
           <Link href="https://cryptoscan.pro" className="block">
             <Image src={theme === 'dark' ? "/logo.png" : "/logo-white.png"} alt="logo" width={35} height={12} />
@@ -84,3 +139,4 @@ export function Header() {
     </div>
   );
 }
+

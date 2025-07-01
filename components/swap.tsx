@@ -120,8 +120,8 @@ export function Swap() {
   }, [markets])
 
   return (
-    <div>
-      <div className="relative flex flex-col gap-2 bg-background rounded rounded-md p-2 border">
+    <div className="flex flex-wrap gap-5 md:gap-3 flex-row lg:flex-col justify-between md:justify-initial ">
+    <div className="lg:min-w-full sm:min-w-70 min-w-full relative flex flex-col gap-2 bg-background rounded rounded-md p-2 border">
         <div className="flex items-center gap-1 select-none cursor-pointer hover:bg-muted/50 border rounded-lg py-1 px-2 w-max text-xs font-semibold text-foreground/80">
           <div className="flex items-center gap-1">
             <SettingsIcon size={12} />
@@ -254,7 +254,7 @@ export function Swap() {
         <Button className="w-full h-9 bg-[#80c116] dark:bg-[#c8f284] hover:bg-[#69991b] dark:hover:bg-[#a1c46e] cursor-pointer">Trade</Button>
         </div>
       </div>
-      <div className="flex flex-col gap-2 my-2">
+      <div className="min-w-50 flex flex-1 flex-col gap-2 my-0 lg:my-0 overflow-scroll max-h-80 lg:border-none border lg:p-0 p-3 rounded lg:max-h-full w-full">
         {Object.values(sortedMarkets).map((market) => (
           <div
             key={market.exchange}
