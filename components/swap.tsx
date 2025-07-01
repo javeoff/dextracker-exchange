@@ -251,7 +251,7 @@ export function Swap() {
           </div>
         </div>
         <div className="w-full mt-2">
-          <Button className="w-full h-9 bg-[#c8f284] hover:bg-[#a1c46e] cursor-pointer">Trade</Button>
+        <Button className="w-full h-9 bg-[#80c116] dark:bg-[#c8f284] hover:bg-[#69991b] dark:hover:bg-[#a1c46e] cursor-pointer">Trade</Button>
         </div>
       </div>
       <div className="flex flex-col gap-2 my-2">
@@ -307,7 +307,7 @@ export function Swap() {
                 </Avatar>
                 {market.exchange}
               </div>
-              <div className="text-xs font-bold flex gap-1 items-center text-[#c8f284]">
+              <div className="text-xs font-bold flex gap-1 items-center text-[#69991b] dark:text-[#c8f284]">
                 0% FEE
               </div>
             </div>

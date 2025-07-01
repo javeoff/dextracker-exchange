@@ -89,7 +89,7 @@ export function TradesStats({ subscribe }: Props) {
             </div>
             <div className={`border overflow-hidden rounded-sm ${stat.net > 3000 ? 'border-green-500/30' : stat.net < -3000 ? 'border-red-500/30' : 'border-input/30'}`}>
               <div className="px-2 h-full text-xs bg-white dark:bg-black">
-                <div className={`flex items-center text-[12px] ${Math.ceil(stat.net) > 0 ? 'text-green-300' : Math.ceil(stat.net) < 0 ? 'text-red-300' : ''}`}>
+              <div className={`flex items-center text-[12px] ${Math.ceil(stat.net) > 0 ? 'text-green-600 dark:text-green-300' : Math.ceil(stat.net) < 0 ? 'text-red-600 dark:text-red-300' : ''}`}>
                   {Math.ceil(stat.net) >= 0 ? '' : '-'}${getBigNumber(Math.abs(stat.net))}
                 </div>
                 <div className="flex gap-1">

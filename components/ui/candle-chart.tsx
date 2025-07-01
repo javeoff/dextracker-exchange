@@ -16,7 +16,7 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
    const chartApiRef = useRef<IChartApi | null>(null);
    const candleSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
    const previousRangeRef = useRef({ from: 0, to: 0 });
-   const { theme } = useTheme();
+   const { resolvedTheme: theme } = useTheme();
 
    useEffect(() => {
       dataRef.current = initialData;

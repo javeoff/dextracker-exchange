@@ -19,8 +19,10 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
+import { useTheme } from "next-themes";
 
 export function Header() {
+  const { resolvedTheme: theme } = useTheme();
   const pathname = usePathname();
   const network = WalletAdapterNetwork.Mainnet;
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
@@ -33,7 +35,7 @@ export function Header() {
       <div className="w-full flex justify-between px-8 py-1 items-center">
         <div className="flex items-center gap-6">
           <Link href="https://cryptoscan.pro" className="block">
-            <Image src="/logo.png" alt="logo" width={35} height={12} />
+            <Image src={theme === 'dark' ? "/logo.png" : "/logo-white.png"} alt="logo" width={35} height={12} />
           </Link>
 
           <NavigationMenu>
@@ -46,14 +48,14 @@ export function Header() {
                 </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link href="https://docs.cryptoscan.pro" legacyBehavior passHref target="_blank">
+                <Link href="https://docs.cryptoscan.pro" target="_blank">
                   <NavigationMenuLink className="px-4 py-2 text-sm font-medium hover:underline">
                     Docs
                   </NavigationMenuLink>
                 </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link href="https://docs.cryptoscan.pro/changelog" legacyBehavior passHref target="_blank">
+                <Link href="https://docs.cryptoscan.pro/changelog" target="_blank">
                   <NavigationMenuLink className="px-4 py-2 text-sm font-medium hover:underline">
                     Changelog
                   </NavigationMenuLink>

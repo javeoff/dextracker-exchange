@@ -27,7 +27,7 @@ const columns: ColumnDef<SubscribeData>[] = [
       const type = row.getValue("type") as string;
 
       return (
-        <div className={`flex items-center gap-1 ${type === 'buy' ? 'text-green-200' : 'text-red-200'}`}>
+        <div className={`flex items-center gap-1 ${type === 'buy' ? 'text-green-600 dark:text-green-200' : 'text-red-600 dark:text-red-200'}`}>
           {type}
         </div>
       )
@@ -108,7 +108,7 @@ const columns: ColumnDef<SubscribeData>[] = [
             </TooltipContent>
           </Tooltip>
           {!!Math.ceil(pnl) && (
-            <div className={`bg-input/30 py-1 px-1 rounded-md text-xs/2 ${pnl > 0 ? 'text-green-200' : 'text-red-200'}`}>
+            <div className={`bg-input/30 py-1 px-1 rounded-md text-xs/2 ${pnl > 0 ? 'text-green-600 dark:text-green-200' : 'text-red-600 dark:text-red-200'}`}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div>
@@ -133,7 +133,7 @@ const columns: ColumnDef<SubscribeData>[] = [
       const type = row.getValue("type") as string;
 
       return (
-        <div className={`flex items-center gap-1 ${type === 'buy' ? 'text-green-200' : 'text-red-200'}`}>
+        <div className={`flex items-center gap-1 ${type === 'buy' ? 'text-green-600 dark:text-green-200' : 'text-red-600 dark:text-red-200'}`}>
           ${getPrice(Number(price))}
         </div>
       )

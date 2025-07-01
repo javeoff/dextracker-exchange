@@ -295,7 +295,7 @@ const columns: ColumnDef<TrendingItem>[] = [
       const net = row.getValue("net") as number;
 
       return (
-        <div className={`flex items-center gap-1 ${net > 0 ? 'text-green-200' : 'text-red-200'}`}>
+        <div className={`flex items-center gap-1 ${net > 0 ? 'text-green-600 dark:text-green-200' : 'text-red-600 dark:text-red-200'}`}>
           ${getBigNumber(net)}
         </div>
       )
