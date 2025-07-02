@@ -266,8 +266,14 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
          priceFormat: {
             type: 'volume',
          },
-         priceScaleId: '',
+         priceScaleId: 'volume',
          color: '#26a69a',
+      });
+      chartApiRef.current.priceScale('volume').applyOptions({
+         scaleMargins: {
+            top: 0.9,
+            bottom: 0,
+         },
       });
 
       // Set initial data

@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { useState, useEffect, useMemo } from "react";
 import { DataTable } from "./data-table";
-import { getBigNumber, getPrice } from "@/lib/utils";
+import { cn, getAgo, getBigNumber, getPrice } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ArrowDown, ArrowUp, ArrowUpDown, FilterIcon } from "lucide-react";
 import { Button } from "./ui/button";
@@ -15,6 +15,8 @@ interface TrendingItem {
   liquidity: number;
   volume: number;
   address: string;
+  rug_ratio: number;
+  pool_creation_timestamp: string;
 }
 
 const columns: ColumnDef<TrendingItem>[] = [
@@ -25,9 +27,33 @@ const columns: ColumnDef<TrendingItem>[] = [
       const symbol = row.getValue("symbol") as number;
 
       return (
-        <div className="flex gap-2 items-center">
-          <CoinAvatar address={row.original.address} />
-          {symbol}
+        <div className="flex gap-4 items-center">
+          <CoinAvatar
+            address={row.original.address}
+            width={32}
+            height={32}
+          />
+          <div
+            className={cn("flex flex-col", row.original.rug_ratio >= 0.2 ? 'text-orange-300' : '', row.original.rug_ratio >= 0.5 ? 'text-orange-500' : '', row.original.rug_ratio >= 0.8 ? 'text-red-500' : '')}
+          >
+            {symbol}
+            <div className="text-[10px] text-muted-foreground">
+              {row.original.address.slice(0, 5)}...{row.original.address.slice(-3)}
+            </div>
+          </div >
+        </div >
+      )
+    },
+  },
+  {
+    accessorKey: "age",
+    header: "Age",
+    cell: ({ row }) => {
+      return (
+        <div className="flex gap-4 items-center">
+          <div className="flex flex-col">
+            {getAgo(new Date(Number(row.original.pool_creation_timestamp) * 1000), true)}
+          </div>
         </div>
       )
     },

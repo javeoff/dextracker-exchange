@@ -3,7 +3,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
 export function CoinAvatar({ className, address, width = 24, height = 24 }: {
   className?: string
-  address: string;
+  address?: string;
   width?: number;
   height?: number;
 }) {

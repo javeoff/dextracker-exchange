@@ -3,21 +3,23 @@
 import { CoinChart } from "@/components/coin-chart";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset } from "@/components/ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
 import { SidebarRight } from "@/components/sidebar-right";
 import { useState, useEffect } from "react";
 import { getQuoteSubscription } from "@/lib/getQuoteSubscription";
 import { Swap } from "@/components/swap";
+import { CoinAvatar } from "@/components/CoinAvatar";
 
 export default function Page() {
   const path = usePathname();
   const [symbol, setSymbol] = useState<string>();
+  const [address, setAddress] = useState<string>();
   const { subscribe } = getQuoteSubscription(path.replace("/", ""));
 
   useEffect(() => {
     const unsubscribe = subscribe((data) => {
       setSymbol((prev) => (!prev ? data.symbol : prev));
+      setAddress((prev) => (!prev ? data.address : prev));
     });
     return () => {
       unsubscribe();
@@ -31,10 +33,7 @@ export default function Page() {
           <div className="flex flex-1 items-center h-10 gap-4 px-4">
             <div className="flex gap-2 items-center">
               <div className="p-2">
-                <Avatar>
-                  <AvatarImage src="/" />
-                  <AvatarFallback>{symbol?.slice(0, 2)}</AvatarFallback>
-                </Avatar>
+                <CoinAvatar address={address} width={32} height={32} />
               </div>
               <div className="h-full flex items-center">
                 <div className="font-medium">{symbol}</div>

@@ -39,6 +39,7 @@ export interface SubscribeData {
   bought: number;
   sold: number;
   boughtAt: number;
+  pool: string;
 }
 
 interface Props {
