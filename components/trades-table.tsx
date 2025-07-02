@@ -17,8 +17,17 @@ import { Button } from "./ui/button";
 
 const columns: ColumnDef<SubscribeData>[] = [
   {
-    accessorKey: "age",
+    accessorKey: "createdAt",
     header: "Age",
+    cell: ({ row }) => {
+      const createdAt = row.getValue("createdAt") as number;
+
+      return (
+        <div className="flex items-center gap-1">
+          {getAgo(new Date(createdAt))}
+        </div>
+      )
+    },
   },
   {
     accessorKey: "type",

@@ -225,5 +225,9 @@ export function getAgo(date: Date, isShort = false): string {
     }
   }
 
-  return `${(milliseconds).toFixed(2)}ms ago`;
+  if (Number.isNaN(milliseconds)) {
+    return `0ms ago`;
+  }
+
+  return `${(Math.abs(milliseconds)).toFixed(2)}ms ago`;
 }

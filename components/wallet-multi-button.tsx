@@ -121,7 +121,7 @@ export function WalletMultiButton({
   };
 
   if (!wallet) {
-    return <Button onClick={openModal}>{content}</Button>;
+    return <Button className="h-8" onClick={openModal}>{content}</Button>;
   }
 
   return (

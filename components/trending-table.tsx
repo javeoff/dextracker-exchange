@@ -8,11 +8,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ArrowDown, ArrowUp, ArrowUpDown, FilterIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { CoinAvatar } from "./CoinAvatar";
 
 interface TrendingItem {
   symbol: string;
   liquidity: number;
   volume: number;
+  address: string;
 }
 
 const columns: ColumnDef<TrendingItem>[] = [
@@ -24,6 +26,7 @@ const columns: ColumnDef<TrendingItem>[] = [
 
       return (
         <div className="flex gap-2 items-center">
+          <CoinAvatar address={row.original.address} />
           {symbol}
         </div>
       )
@@ -34,6 +37,10 @@ const columns: ColumnDef<TrendingItem>[] = [
     header: "Price",
     cell: ({ row }) => {
       const price = row.getValue("price") as number;
+
+      if (!price) {
+        return null;
+      }
 
       return (
         <div className="text-muted-foreground">
@@ -50,7 +57,7 @@ const columns: ColumnDef<TrendingItem>[] = [
         <Button
           variant="ghost"
           className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          onClick={() => column.toggleSorting()}
         >
           {column.getIsSorted() === "asc" && <ArrowUp size={16} />}
           {column.getIsSorted() === "desc" && <ArrowDown size={16} />}
@@ -95,8 +102,8 @@ const columns: ColumnDef<TrendingItem>[] = [
         </Popover>
       </div >
     ),
-    enableSorting: true,
     enableColumnFilter: true,
+    sortDescFirst: true,
     filterFn: (row, columnId, filterValue: { min: number; max: number }) => {
       const value = row.getValue(columnId) as string;
       return (filterValue.min ? Number(value) >= filterValue.min : true) &&
@@ -115,7 +122,7 @@ const columns: ColumnDef<TrendingItem>[] = [
         <Button
           variant="ghost"
           className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          onClick={() => column.toggleSorting()}
         >
           {column.getIsSorted() === "asc" && <ArrowUp size={16} />}
           {column.getIsSorted() === "desc" && <ArrowDown size={16} />}
@@ -161,6 +168,7 @@ const columns: ColumnDef<TrendingItem>[] = [
       </div >
     ),
     enableSorting: true,
+    sortDescFirst: true,
     enableColumnFilter: true,
     filterFn: (row, columnId, filterValue: { min: number; max: number }) => {
       const value = row.getValue(columnId) as string;
@@ -168,7 +176,7 @@ const columns: ColumnDef<TrendingItem>[] = [
         (filterValue.max ? Number(value) <= filterValue.max : true);
     },
     cell: ({ row }) => {
-      const volume = row.getValue("volume") as number;
+      const volume = row.getValue("volume24") as number;
       return <div>${getBigNumber(volume)}</div>;
     },
   },
@@ -180,7 +188,7 @@ const columns: ColumnDef<TrendingItem>[] = [
         <Button
           variant="ghost"
           className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          onClick={() => column.toggleSorting()}
         >
           {column.getIsSorted() === "asc" && <ArrowUp size={16} />}
           {column.getIsSorted() === "desc" && <ArrowDown size={16} />}
@@ -226,6 +234,7 @@ const columns: ColumnDef<TrendingItem>[] = [
       </div >
     ),
     enableSorting: true,
+    sortDescFirst: true,
     enableColumnFilter: true,
     filterFn: (row, columnId, filterValue: { min: number; max: number }) => {
       const value = row.getValue(columnId) as string;
@@ -246,7 +255,7 @@ const columns: ColumnDef<TrendingItem>[] = [
         <Button
           variant="ghost"
           className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          onClick={() => column.toggleSorting()}
         >
           {column.getIsSorted() === "asc" && <ArrowUp size={16} />}
           {column.getIsSorted() === "desc" && <ArrowDown size={16} />}
@@ -291,6 +300,7 @@ const columns: ColumnDef<TrendingItem>[] = [
         </Popover>
       </div >
     ),
+    sortDescFirst: true,
     cell: ({ row }) => {
       const net = row.getValue("net") as number;
 
@@ -303,39 +313,13 @@ const columns: ColumnDef<TrendingItem>[] = [
   },
   {
     accessorKey: "buys",
-    header: "Buys",
-    cell: ({ row }) => {
-      const buys = row.getValue("buys") as number;
-
-      return (
-        <div>
-          ${getBigNumber(buys)}
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: "sells",
-    header: "Sells",
-    cell: ({ row }) => {
-      const sells = row.getValue("sells") as number;
-
-      return (
-        <div>
-          ${getBigNumber(sells)}
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: "swaps",
     header: ({ column }) => (
       <div className="relative flex items-center">
-        <div>TXs</div>
+        <div>Buys</div>
         <Button
           variant="ghost"
           className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          onClick={() => column.toggleSorting()}
         >
           {column.getIsSorted() === "asc" && <ArrowUp size={10} />}
           {column.getIsSorted() === "desc" && <ArrowDown size={10} />}
@@ -380,6 +364,135 @@ const columns: ColumnDef<TrendingItem>[] = [
         </Popover>
       </div >
     ),
+    sortDescFirst: true,
+    cell: ({ row }) => {
+      const buys = row.getValue("buys") as number;
+
+      return (
+        <div className="font-semibold">
+          ${getBigNumber(buys)}
+        </div>
+      )
+    }
+  },
+  {
+    accessorKey: "sells",
+    header: ({ column }) => (
+      <div className="relative flex items-center">
+        <div>Sells</div>
+        <Button
+          variant="ghost"
+          className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
+          onClick={() => column.toggleSorting()}
+        >
+          {column.getIsSorted() === "asc" && <ArrowUp size={10} />}
+          {column.getIsSorted() === "desc" && <ArrowDown size={10} />}
+          {!column.getIsSorted() && <ArrowUpDown size={10} />}
+        </Button>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
+              <FilterIcon size={12} />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-40">
+            <div className="flex flex-col gap-2">
+              <Input
+                type="number"
+                placeholder="Min"
+                className="border rounded px-2 py-1"
+                value={(column.getFilterValue() as { min: number; max: number })?.min}
+                onChange={(e) => {
+                  const prev = (column.getFilterValue() as { min: number; max: number }) || {};
+                  column.setFilterValue({
+                    ...prev,
+                    min: e.target.value ? Number(e.target.value) : undefined,
+                  });
+                }}
+              />
+              <Input
+                type="number"
+                placeholder="Max"
+                className="border rounded px-2 py-1"
+                value={(column.getFilterValue() as { min: number; max: number })?.max}
+                onChange={(e) => {
+                  const prev = (column.getFilterValue() as { min: number; max: number }) || {};
+                  column.setFilterValue({
+                    ...prev,
+                    max: e.target.value ? Number(e.target.value) : undefined,
+                  });
+                }}
+              />
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div >
+    ),
+    sortDescFirst: true,
+    cell: ({ row }) => {
+      const sells = row.getValue("sells") as number;
+
+      return (
+        <div className="font-semibold">
+          ${getBigNumber(sells)}
+        </div>
+      )
+    }
+  },
+  {
+    accessorKey: "swaps",
+    header: ({ column }) => (
+      <div className="relative flex items-center">
+        <div>TXs</div>
+        <Button
+          variant="ghost"
+          className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
+          onClick={() => column.toggleSorting()}
+        >
+          {column.getIsSorted() === "asc" && <ArrowUp size={10} />}
+          {column.getIsSorted() === "desc" && <ArrowDown size={10} />}
+          {!column.getIsSorted() && <ArrowUpDown size={10} />}
+        </Button>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
+              <FilterIcon size={12} />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-40">
+            <div className="flex flex-col gap-2">
+              <Input
+                type="number"
+                placeholder="Min"
+                className="border rounded px-2 py-1"
+                value={(column.getFilterValue() as { min: number; max: number })?.min}
+                onChange={(e) => {
+                  const prev = (column.getFilterValue() as { min: number; max: number }) || {};
+                  column.setFilterValue({
+                    ...prev,
+                    min: e.target.value ? Number(e.target.value) : undefined,
+                  });
+                }}
+              />
+              <Input
+                type="number"
+                placeholder="Max"
+                className="border rounded px-2 py-1"
+                value={(column.getFilterValue() as { min: number; max: number })?.max}
+                onChange={(e) => {
+                  const prev = (column.getFilterValue() as { min: number; max: number }) || {};
+                  column.setFilterValue({
+                    ...prev,
+                    max: e.target.value ? Number(e.target.value) : undefined,
+                  });
+                }}
+              />
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div >
+    ),
+    sortDescFirst: true,
     cell: ({ row }) => {
       const swaps = row.getValue("swaps") as number;
 
@@ -389,7 +502,199 @@ const columns: ColumnDef<TrendingItem>[] = [
         </div>
       )
     }
-  }
+  },
+  {
+    accessorKey: "price_change_percent1m",
+    header: ({ column }) => (
+      <div className="relative flex items-center">
+        <div>1m</div>
+        <Button
+          variant="ghost"
+          className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
+          onClick={() => column.toggleSorting()}
+        >
+          {column.getIsSorted() === "asc" && <ArrowUp size={16} />}
+          {column.getIsSorted() === "desc" && <ArrowDown size={16} />}
+          {!column.getIsSorted() && <ArrowUpDown size={16} />}
+        </Button>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
+              <FilterIcon size={12} />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-40">
+            <div className="flex flex-col gap-2">
+              <Input
+                type="number"
+                placeholder="Min"
+                className="border rounded px-2 py-1"
+                value={(column.getFilterValue() as { min: number; max: number })?.min}
+                onChange={(e) => {
+                  const prev = (column.getFilterValue() as { min: number; max: number }) || {};
+                  column.setFilterValue({
+                    ...prev,
+                    min: e.target.value ? Number(e.target.value) : undefined,
+                  });
+                }}
+              />
+              <Input
+                type="number"
+                placeholder="Max"
+                className="border rounded px-2 py-1"
+                value={(column.getFilterValue() as { min: number; max: number })?.max}
+                onChange={(e) => {
+                  const prev = (column.getFilterValue() as { min: number; max: number }) || {};
+                  column.setFilterValue({
+                    ...prev,
+                    max: e.target.value ? Number(e.target.value) : undefined,
+                  });
+                }}
+              />
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div >
+    ),
+    sortDescFirst: true,
+    cell: ({ row }) => {
+      const change = (row.getValue("price_change_percent1m") || 0) as number;
+
+      return (
+        <div className={`flex items-center gap-1 ${change > 0 ? 'text-green-600 dark:text-green-200' : 'text-red-600 dark:text-red-200'}`}>
+          {change.toFixed(1)}%
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "price_change_percent5m",
+    header: ({ column }) => (
+      <div className="relative flex items-center">
+        <div>5m</div>
+        <Button
+          variant="ghost"
+          className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
+          onClick={() => column.toggleSorting()}
+        >
+          {column.getIsSorted() === "asc" && <ArrowUp size={16} />}
+          {column.getIsSorted() === "desc" && <ArrowDown size={16} />}
+          {!column.getIsSorted() && <ArrowUpDown size={16} />}
+        </Button>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
+              <FilterIcon size={12} />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-40">
+            <div className="flex flex-col gap-2">
+              <Input
+                type="number"
+                placeholder="Min"
+                className="border rounded px-2 py-1"
+                value={(column.getFilterValue() as { min: number; max: number })?.min}
+                onChange={(e) => {
+                  const prev = (column.getFilterValue() as { min: number; max: number }) || {};
+                  column.setFilterValue({
+                    ...prev,
+                    min: e.target.value ? Number(e.target.value) : undefined,
+                  });
+                }}
+              />
+              <Input
+                type="number"
+                placeholder="Max"
+                className="border rounded px-2 py-1"
+                value={(column.getFilterValue() as { min: number; max: number })?.max}
+                onChange={(e) => {
+                  const prev = (column.getFilterValue() as { min: number; max: number }) || {};
+                  column.setFilterValue({
+                    ...prev,
+                    max: e.target.value ? Number(e.target.value) : undefined,
+                  });
+                }}
+              />
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div >
+    ),
+    sortDescFirst: true,
+    cell: ({ row }) => {
+      const change = (row.getValue("price_change_percent5m") || 0) as number;
+
+      return (
+        <div className={`flex items-center gap-1 ${change > 0 ? 'text-green-600 dark:text-green-200' : 'text-red-600 dark:text-red-200'}`}>
+          {change.toFixed(1)}%
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "price_change_percent1h",
+    header: ({ column }) => (
+      <div className="relative flex items-center">
+        <div>1h</div>
+        <Button
+          variant="ghost"
+          className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
+          onClick={() => column.toggleSorting()}
+        >
+          {column.getIsSorted() === "asc" && <ArrowUp size={16} />}
+          {column.getIsSorted() === "desc" && <ArrowDown size={16} />}
+          {!column.getIsSorted() && <ArrowUpDown size={16} />}
+        </Button>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
+              <FilterIcon size={12} />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-40">
+            <div className="flex flex-col gap-2">
+              <Input
+                type="number"
+                placeholder="Min"
+                className="border rounded px-2 py-1"
+                value={(column.getFilterValue() as { min: number; max: number })?.min}
+                onChange={(e) => {
+                  const prev = (column.getFilterValue() as { min: number; max: number }) || {};
+                  column.setFilterValue({
+                    ...prev,
+                    min: e.target.value ? Number(e.target.value) : undefined,
+                  });
+                }}
+              />
+              <Input
+                type="number"
+                placeholder="Max"
+                className="border rounded px-2 py-1"
+                value={(column.getFilterValue() as { min: number; max: number })?.max}
+                onChange={(e) => {
+                  const prev = (column.getFilterValue() as { min: number; max: number }) || {};
+                  column.setFilterValue({
+                    ...prev,
+                    max: e.target.value ? Number(e.target.value) : undefined,
+                  });
+                }}
+              />
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div >
+    ),
+    sortDescFirst: true,
+    cell: ({ row }) => {
+      const change = (row.getValue("price_change_percent1h") || 0) as number;
+
+      return (
+        <div className={`flex items-center gap-1 ${change > 0 ? 'text-green-600 dark:text-green-200' : 'text-red-600 dark:text-red-200'}`}>
+          {change.toFixed(1)}%
+        </div>
+      )
+    },
+  },
 ]
 
 export function TrendingTable() {
@@ -399,13 +704,20 @@ export function TrendingTable() {
   useEffect(() => {
     const ws = new WebSocket('wss://api.cryptoscan.pro/trending')
     ws.onmessage = (msg) => {
-      const trendingItem = JSON.parse(msg.data)
-      if (!trendingItem.symbol) {
-        return;
-      }
-      setTrending((prev) => {
-        return { [trendingItem.symbol]: trendingItem, ...prev };
-      })
+      const trendingItems = JSON.parse(msg.data)
+      setTrending(trendingItems.map((t: Record<string, string | number>) => ({
+        ...t,
+        liquidity: Number(t.liquidity),
+        volume24: Number(t.volume24),
+        volume: Number(t.volume),
+        buys: Number(t.buys),
+        sells: Number(t.sells),
+        net: Number(t.net),
+        txs: Number(t.txs),
+        price_change_percent1m: Number(t.price_change_percent1m),
+        price_change_percent5m: Number(t.price_change_percent5m),
+        price_change_percent1h: Number(t.price_change_percent1h),
+      })))
     }
     return () => {
       ws.close()
