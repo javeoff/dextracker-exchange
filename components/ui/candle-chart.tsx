@@ -200,7 +200,6 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
 
    useEffect(() => {
       if (!chartRef.current) return;
-      console.log('theme', theme)
 
       const containerWidth = chartRef.current.clientWidth;
       const containerHeight = chartRef.current.clientHeight || 400;
@@ -302,7 +301,6 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
       });
 
       chartApiRef.current.subscribeCrosshairMove((param) => {
-         console.log(param)
          if (!param.time || !param.seriesData || !volumeSeriesRef.current || !candleSeriesRef.current) {
             setHoverInfo({ visible: false });
             return;

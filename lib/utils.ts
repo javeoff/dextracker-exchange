@@ -170,7 +170,7 @@ export function getVolumeTooltip(volume: number): string {
 
 export function getPrice(price: number, expanded = false): string {
   if (!isFinite(price) || price <= 0) {
-    throw new Error("Invalid price");
+    return '';
   }
 
   const bn = new BigNumber(price);
@@ -230,4 +230,28 @@ export function getAgo(date: Date, isShort = false): string {
   }
 
   return `${(Math.abs(milliseconds)).toFixed(2)}ms ago`;
+}
+
+export function formatTimeDifference(futureDate: Date) {
+  const now = Date.now();
+  const diffMs = futureDate.getTime() - now;
+  
+  if (diffMs <= 0) {
+    return "0s";
+  }
+
+  const seconds = Math.floor(diffMs / 1000) % 60;
+  const minutes = Math.floor(diffMs / (1000 * 60)) % 60;
+  const hours = Math.floor(diffMs / (1000 * 60 * 60)) % 24;
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (days > 0) {
+    return `${days}d ${hours}h`;
+  } else if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  } else if (minutes > 0) {
+    return `${minutes}m ${seconds}s`;
+  } else {
+    return `${seconds}s`;
+  }
 }

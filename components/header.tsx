@@ -4,7 +4,7 @@ import { WalletModalProvider } from "@/provider/wallet-modal";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
 import { clusterApiUrl } from "@solana/web3.js";
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
 import { ModeToggle } from "./mode-toggle";
 import { WalletMultiButton } from "./wallet-multi-button";
 import { CommandSearch } from "./command-search";
@@ -20,6 +20,8 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import { useTheme } from "next-themes";
+import { Gift } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function Header() {
   const { resolvedTheme: theme } = useTheme();
@@ -67,7 +69,9 @@ export function Header() {
 
         <div className="flex justify-between items-center gap-2">
           <div className="flex-1">
-            <CommandSearch />
+            <Suspense fallback={<div>Loading...</div>}>
+              <CommandSearch />
+            </Suspense>
           </div>
 
           <div className="flex items-center gap-2">
@@ -76,7 +80,9 @@ export function Header() {
             <ConnectionProvider endpoint={endpoint}>
               <WalletProvider wallets={[]} autoConnect>
                 <WalletModalProvider>
-                  <WalletMultiButton />
+                  <Suspense fallback={<div>Loading...</div>}>
+                    <WalletMultiButton />
+                  </Suspense>
                 </WalletModalProvider>
               </WalletProvider>
             </ConnectionProvider>
@@ -118,7 +124,14 @@ export function Header() {
         </div>
 
         <div className="flex gap-2 items-center">
-          <CommandSearch />
+          <Suspense fallback={<div>Loading...</div>}>
+            <CommandSearch />
+          </Suspense>
+          <Link href="/referral" className="relative rounded-md h-[33px] w-[33px] rainbow-border">
+            <Button variant="outline" size="icon" className="absolute top-[1px] rainbow-border-inner left-[1px] border-none h-[31px] w-[31px] dark:bg-[#151515] dark:hover:bg-[#1d1d1d] cursor-pointer">
+              <Gift className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all" />
+            </Button>
+          </Link>
           <ModeToggle />
           <Separator
             orientation="vertical"
@@ -127,13 +140,15 @@ export function Header() {
           <ConnectionProvider endpoint={endpoint}>
             <WalletProvider wallets={[]} autoConnect>
               <WalletModalProvider>
-                <WalletMultiButton />
+                <Suspense fallback={<div>Loading...</div>}>
+                  <WalletMultiButton />
+                </Suspense>
               </WalletModalProvider>
             </WalletProvider>
           </ConnectionProvider>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 

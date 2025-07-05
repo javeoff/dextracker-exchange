@@ -1,5 +1,6 @@
 import { SubscribeData } from '@/components/ui/trades-chart';
 import memoize from 'memoizee';
+import { Coin } from './types';
 
 function createSubscription(symbol: string) {
   const ws = new WebSocket(`wss://api.cryptoscan.pro/quote?symbol=${symbol}`);
@@ -7,12 +8,13 @@ function createSubscription(symbol: string) {
 
   ws.onmessage = (msg) => {
     const data = JSON.parse(msg.data);
-    if (data.network === 'sol') {
-      localStorage.setItem('dexAddress', data.address);
+    if ('coins' in data) {
+      const coin = (data.coins as Coin[]).sort((a, b) => b.liquidity - a.liquidity)[0];
+      console.log('coin', coin)
+      localStorage.setItem('symbol', coin.symbol)
+      localStorage.setItem('dexAddress', coin.address)
     }
-    if (data?.price) {
-      subscribers.forEach((cb) => cb(data));
-    }
+    subscribers.forEach((cb) => cb(data));
   };
 
   return {

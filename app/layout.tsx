@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/header";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "@/components/ui/sonner"
 import { SupportWidget } from "@/components/support-widget";
 
 const geistSans = Geist({
@@ -47,6 +48,7 @@ export default function RootLayout({
             <div className="mt-13 w-full flex">
               {children}
             </div>
+            <Toaster />
           </ThemeProvider>
         </SidebarProvider>
       </body>

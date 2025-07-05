@@ -138,7 +138,6 @@ export function TradesChart({
     setTimeout(positionElements, 100);
 
     const unsubscribe = chartRef.current.subscribeToScaleChanges(() => {
-      console.log('changed')
       positionElements();
     });
 

@@ -7,34 +7,34 @@ interface Props {
 }
 
 export function TradesStats({ subscribe }: Props) {
-  const [stats, setStats] = useState<Record<string, { buys: number; sells: number; net: number }>>({});
+  const [stats, setStats] = useState<Record<string, { 
+    buys: number; 
+    sells: number; 
+    net: number;
+    exchange: string;
+  }>>({});
 
   useEffect(() => {
     const timers: NodeJS.Timeout[] = [];
 
     subscribe((data: SubscribeData) => {
-      if ('symbol' in data) {
-        localStorage.setItem('symbol', data.symbol)
-      }
-      if ('address' in data) {
-        localStorage.setItem('dexAddress', data.address)
-      }
       if (!data.exchange) return;
 
       const volume = data.volume;
       const isBuy = data.type === 'buy';
 
-      // Сначала добавляем данные
       setStats((prevStats) => {
-        const current = prevStats[data.exchange] || { buys: 0, sells: 0, net: 0 };
+        const current = prevStats[data.exchange + data.address] || { buys: 0, sells: 0, net: 0 };
 
         const updated = isBuy
           ? {
+            exchange: data.exchange,
             buys: current.buys + volume,
             sells: current.sells,
             net: current.net + volume,
           }
           : {
+            exchange: data.exchange,
             buys: current.buys,
             sells: current.sells + volume,
             net: current.net - volume,
@@ -42,23 +42,25 @@ export function TradesStats({ subscribe }: Props) {
 
         return {
           ...prevStats,
-          [data.exchange]: updated,
+          [data.exchange + data.address]: updated,
         };
       });
 
       // Через 5 секунд вычитаем те же данные
       const timer = setTimeout(() => {
         setStats((prevStats) => {
-          const current = prevStats[data.exchange];
+          const current = prevStats[data.exchange + data.address];
           if (!current) return prevStats;
 
           const updated = isBuy
             ? {
+              exchange: data.exchange,
               buys: current.buys - volume,
               sells: current.sells,
               net: current.net - volume,
             }
             : {
+              exchange: data.exchange,
               buys: current.buys,
               sells: current.sells - volume,
               net: current.net + volume,
@@ -66,7 +68,7 @@ export function TradesStats({ subscribe }: Props) {
 
           return {
             ...prevStats,
-            [data.exchange]: updated,
+            [data.exchange + data.address]: updated,
           };
         });
       }, 5000);
@@ -85,11 +87,11 @@ export function TradesStats({ subscribe }: Props) {
         <div key={key}>
           <div className="relative z-1 flex gap-1 items-center w-full text-xs bg-input/30 rounded-sm whitespace-nowrap">
             <div className="px-2">
-              {key}
+              {stat.exchange}
             </div>
             <div className={`border overflow-hidden rounded-sm ${stat.net > 3000 ? 'border-green-500/30' : stat.net < -3000 ? 'border-red-500/30' : 'border-input/30'}`}>
               <div className="px-2 h-full text-xs bg-white dark:bg-black">
-              <div className={`flex items-center text-[12px] ${Math.ceil(stat.net) > 0 ? 'text-green-600 dark:text-green-300' : Math.ceil(stat.net) < 0 ? 'text-red-600 dark:text-red-300' : ''}`}>
+                <div className={`flex items-center text-[12px] ${Math.ceil(stat.net) > 0 ? 'text-green-600 dark:text-green-300' : Math.ceil(stat.net) < 0 ? 'text-red-600 dark:text-red-300' : ''}`}>
                   {Math.ceil(stat.net) >= 0 ? '' : '-'}${getBigNumber(Math.abs(stat.net))}
                 </div>
                 <div className="flex gap-1">

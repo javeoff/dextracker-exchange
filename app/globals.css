@@ -197,3 +197,34 @@
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;     /* Firefox */
 }
+
+@keyframes rainbow-gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.rainbow-border {
+  background: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet, red);
+  background-size: 300% 300%;
+  animation: rainbow-gradient 5s ease infinite;
+}
+
+.rainbow-border-inner {
+  background: white;
+}
+
+.dark .rainbow-border-inner {
+  background: #151515;
+}
+
+.rainbow-border-inner:hover {
+  background: #f5f5f5;
+}
+
+.dark .rainbow-border-inner:hover {
+  background: #1d1d1d;
+}

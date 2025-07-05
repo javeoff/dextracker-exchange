@@ -21,7 +21,7 @@ import { useIsMac } from "@/hooks/use-is-mac"
 import { useState, useEffect, ReactNode } from "react"
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 
 interface Coin {
   id: string;
@@ -41,6 +41,7 @@ export function CommandSearch({
   children?: ReactNode
   onClick?: (coin: Coin) => void;
 }) {
+  const query = useSearchParams()
   const router = useRouter();
   const isMac = useIsMac()
   const [open, setOpen] = useState(false)
@@ -118,7 +119,9 @@ export function CommandSearch({
                     onClick(coin)
                   }
                   else {
-                    router.push('/' + coin.id)
+                    const ref = query.get('ref');
+                    const link = '/' + coin.id;
+                    router.push(ref ? `${link}?ref=${ref}` : link)
                   }
                 }}
               >
