@@ -232,9 +232,8 @@ export function getAgo(date: Date, isShort = false): string {
   return `${(Math.abs(milliseconds)).toFixed(2)}ms ago`;
 }
 
-export function formatTimeDifference(futureDate: Date) {
-  const now = Date.now();
-  const diffMs = futureDate.getTime() - now;
+export function formatTimeDifference(futureDate: Date, now: Date) {
+  const diffMs = futureDate.getTime() - now.getTime();
   
   if (diffMs <= 0) {
     return "0s";

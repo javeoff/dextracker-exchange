@@ -19,6 +19,7 @@ export interface Referral {
   refId: string;
   earnSenders: Record<string, number>;
   spinAt: Date;
+  topBalanceShareUsd: number;
 }
 
 export interface Coin {

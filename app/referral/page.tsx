@@ -12,6 +12,7 @@ export default function Home() {
   const [refInfo, setRefInfo] = useState<RefInfo>();
   const [refs, setRefs] = useState<Referral[]>([]);
   const [refCode, setRefCode] = useState<string | null>(null);
+  const [sort, setSort] = useState<string>();
 
   useEffect(() => {
     const storedRef = localStorage.getItem('ref');
@@ -33,20 +34,26 @@ export default function Home() {
 
   useEffect(() => {
     const load = async () => {
-      const res = await fetch('https://api.cryptoscan.pro/ref/list');
+      const res = await fetch(`https://api.cryptoscan.pro/ref/list?sort=${sort}`);
       const data = await res.json();
-      setRefs(data.map((d: Record<string, string | number>) => {
-        const spinAt = new Date(d.registeredAt);
-        spinAt.setDate(spinAt.getDate() + 7)
+      const mapped = data.map((d: Record<string, string | number>) => {
+        const registeredAt = new Date(d.registeredAt);
+        const spinAt = new Date(registeredAt);
+        spinAt.setDate(spinAt.getDate() + 7);
         return {
           ...d,
+          registeredAt,
           spinAt,
-        }
-      }))
-    }
-    load();
-  }, [setRefs])
+        };
+      });
+      setRefs(mapped);
+    };
 
+    load();
+    const intervalId = setInterval(load, 5000);
+
+    return () => clearInterval(intervalId);
+  }, [sort]);
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <div className="w-full px-4 py-6 md:py-10 md:px-8 flex flex-col md:flex-row gap-6">
@@ -91,7 +98,7 @@ export default function Home() {
           <div className="flex gap-2 items-center">
             <h2 className="text-2xl font-semibold">Rewards</h2>
             <div className="bg-foreground text-background rounded text-xs py-[2px] px-1">
-              25% Comission Rate
+              20% Comission Rate (X2)
             </div>
           </div>
           <div className="border rounded-md">
@@ -116,26 +123,63 @@ export default function Home() {
             </Card>
           </div>
 
-          <div>
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-2 flex-wrap">
+              <Button
+                size="sm"
+                className="cursor-pointer text-xs h-7"
+                variant={sort === "volume" || !sort ? "default" : "outline"}
+                onClick={() => setSort("volume")}
+              >
+                Volume (+10% Top 10)
+              </Button>
+              <Button
+                size="sm"
+                className="cursor-pointer text-xs h-7"
+                variant={sort === "created" ? "default" : "outline"}
+                onClick={() => setSort("created")}
+              >
+                New Referral
+              </Button>
+              <Button
+                size="sm"
+                className="cursor-pointer text-xs h-7"
+                variant={sort === "spinAt" ? "default" : "outline"}
+                onClick={() => setSort("spinAt")}
+              >
+                Rewards Soon
+              </Button>
+            </div>
+
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-muted-foreground text-left">
+                  {sort === "volume" && <th className="py-2 pr-2">#</th>}
                   <th className="py-2">Author</th>
                   <th className="py-2 pr-4">Reward Time</th>
                   <th className="py-2 pr-4">Volume</th>
                   <th className="py-2 pr-4">Reward</th>
                   <th className="py-2 pr-4">Traders</th>
+                  <th className="py-2 pr-4">Extra Reward</th>
                   <th className="py-2 pr-4"></th>
                 </tr>
               </thead>
               <tbody>
-                {refs.map((row) => (
+                {refs.map((row, index) => (
                   <tr key={row.refId} className="border-t">
+                    {sort === "volume" && (
+                      <td className="py-2 pr-4 font-semibold text-xs text-center text-muted-foreground">
+                        <div className="bg-background border rounded-md bg-input/30">
+                          #{index + 1}
+                        </div>
+                      </td>
+                    )}
                     <td className="py-2">{row.refId}</td>
-                    <td className="py-2 pr-4">{formatTimeDifference(row.spinAt)}</td>
-                    <td className="py-2 pr-4">${(row.refBalanceUsd / 0.0025).toFixed(2)}</td>
+                    <td className="py-2 pr-4"><RewardCountdown targetDate={row.spinAt} /></td>
+                    <td className="py-2 pr-4">${(row.refBalanceUsd / 0.002).toFixed(2)}</td>
                     <td className="py-2 pr-4">${(row.refBalanceUsd).toFixed(2)}</td>
                     <td className="py-2 pr-4">{row.earnSenders ? Object.keys(row.earnSenders).length : 0}</td>
+                    <td className="py-2 pr-4">${(row.topBalanceShareUsd || 0).toFixed(2)}</td>
                     <td className="py-2 pr-4 flex gap-2">
                       <Link href={`/referral/${row.refId}`}>
                         <Button size="sm" variant="outline" className="cursor-pointer">
@@ -152,9 +196,29 @@ export default function Home() {
                 ))}
               </tbody>
             </table>
+
           </div>
         </div>
       </div>
     </Suspense>
   );
 }
+
+type Props = {
+  targetDate: Date;
+};
+
+function RewardCountdown({ targetDate }: Props) {
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(new Date());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return <span>{formatTimeDifference(targetDate, now)}</span>;
+}
+
