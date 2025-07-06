@@ -9,7 +9,7 @@ import { ModeToggle } from "./mode-toggle";
 import { WalletMultiButton } from "./wallet-multi-button";
 import { CommandSearch } from "./command-search";
 import { Separator } from "./ui/separator";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -22,11 +22,9 @@ import {
 import { useTheme } from "next-themes";
 import { Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import router from "next/router";
 
 export function Header() {
   const { resolvedTheme: theme } = useTheme();
-  const query = useSearchParams()
   const pathname = usePathname();
   const network = WalletAdapterNetwork.Mainnet;
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
@@ -127,14 +125,7 @@ export function Header() {
 
         <div className="flex gap-2 items-center">
           <Suspense fallback={<div>Loading...</div>}>
-            <CommandSearch
-            withKeybind={true}
-              onClick={(coin) => {
-                const ref = query.get('ref');
-                const link = '/' + coin.id;
-                router.push(ref ? `${link}?ref=${ref}` : link)
-              }}
-            />
+            <CommandSearch withKeybind={true} />
           </Suspense>
           <Link href="/referral" className="relative rounded-md h-[33px] w-[33px] rainbow-border">
             <Button variant="outline" size="icon" className="absolute top-[1px] rainbow-border-inner left-[1px] border-none h-[31px] w-[31px] dark:bg-[#151515] dark:hover:bg-[#1d1d1d] cursor-pointer">
