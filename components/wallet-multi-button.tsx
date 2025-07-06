@@ -42,7 +42,7 @@ export function WalletMultiButton({
     connecting: "Connecting...",
     connected: "Connected",
     "has-wallet": "Connect",
-    "no-wallet": "Connect",
+    "no-wallet": "Connect Wallet",
   },
 }: WalletMultiButtonProps) {
   const { publicKey, wallet, disconnect, connecting } = useWallet();
@@ -141,7 +141,7 @@ export function WalletMultiButton({
   };
 
   if (!wallet) {
-    return <Button onClick={openModal}>{content}</Button>;
+    return <Button variant="outline" className="my-1 cursor-pointer" onClick={openModal}>{content}</Button>;
   }
 
   return (
