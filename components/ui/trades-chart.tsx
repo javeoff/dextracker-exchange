@@ -81,7 +81,7 @@ export function TradesChart({
       setInitialData(
         data.map((d: Record<string, number | string>) => ({
           ...d,
-          time: d.time,
+          time: Math.floor(Number(d.time) / 1000),
           open: Number(d.open),
           close: Number(d.close),
           high: Number(d.high),
@@ -253,7 +253,7 @@ export function TradesChart({
           exchangeLoaded = true;
         }
       }
-      if (!chartRef.current) {
+      if (!chartRef.current || !data.price) {
         return
       }
       if (data.exchange === exchange) {

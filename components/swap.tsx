@@ -1,6 +1,6 @@
 "use client";
 
-import { ActivityIcon, SettingsIcon, SlidersHorizontalIcon, WalletIcon } from "lucide-react";
+import { ActivityIcon, SettingsIcon, SlidersHorizontalIcon, SparklesIcon, WalletIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import { ADDRESS_SYMBOLS, cn, getBigNumber, getPrice } from "@/lib/utils";
@@ -19,6 +19,8 @@ import { VersionedTransaction } from "@solana/web3.js";
 import { toast } from "sonner";
 import { useTradingWallet } from "@/hooks/use-trading-wallet";
 import { Coin } from "@/lib/types";
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader, DialogFooter } from "./ui/dialog";
+import { Input } from "./ui/input";
 
 const getBalances = async (walletAddress: string) => {
   if (!walletAddress) {
@@ -31,6 +33,13 @@ const getBalances = async (walletAddress: string) => {
 }
 
 export function Swap() {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [slippage, setSlippage] = useState<string>();
+  const [priorityFee, setPriorityFee] = useState<string>();
+  const displayText = (!slippage && !priorityFee)
+    ? "Auto"
+    : "Manual";
+  const displaySlippage = slippage ? `${slippage}%` : "0.5%";
   const { publicKey: _publicKey, signTransaction } = useWallet();
   const { getWallet } = useTradingWallet();
   const publicKey = getWallet()?.publicKey || _publicKey;
@@ -44,7 +53,7 @@ export function Swap() {
   const query = useSearchParams();
   const [balances, setBalances] = useState<Record<string, { uiAmount: number }>>({});
   const [dexExchange, setDexExchange] = useState<string | null>()
-  const [fromAddress, setFromAddress] = useState<string | null>('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v')
+  const [fromAddress, setFromAddress] = useState<string | null>('So11111111111111111111111111111111111111112')
   const [toAddress, setToAddress] = useState<string | null>(localStorage.getItem('dexAddress'));
   const [fromSymbol, setFromSymbol] = useState<string | null>(ADDRESS_SYMBOLS[fromAddress!] || symbol!)
   const [toSymbol, setToSymbol] = useState<string | null>(ADDRESS_SYMBOLS[toAddress!] || symbol!);
@@ -199,21 +208,83 @@ export function Swap() {
     <Suspense fallback={<div>Loading...</div>}>
       <div className="flex flex-wrap gap-5 md:gap-3 flex-row lg:flex-col justify-between md:justify-initial ">
         <div className="lg:min-w-full sm:min-w-70 min-w-full relative flex flex-col gap-2 bg-background rounded rounded-md p-2 border">
-          <div className="flex items-center gap-1 select-none cursor-pointer hover:bg-muted/50 border rounded-lg py-1 px-2 w-max text-xs font-semibold text-foreground/80">
+          <div
+            className="flex items-center gap-1 select-none cursor-pointer hover:bg-muted/50 border rounded-lg py-1 px-2 w-max text-xs font-semibold text-foreground/80"
+            onClick={() => setModalOpen(true)}
+          >
             <div className="flex items-center gap-1">
-              <SettingsIcon size={12} />
-              Manual
+              {displayText === 'Auto' && <SparklesIcon className="text-[#c8f284] h-3 w-3" />}
+              {displayText === 'Manual' && <SettingsIcon className="text-muted-foreground h-3 w-3" />}
+              {displayText}
             </div>
-            <Separator
-              orientation="vertical"
-              className="mx-1 data-[orientation=vertical]:h-3"
-            />
-            <div className="flex items-center gap-1">
-              <ActivityIcon size={12} />
-              0.5%
-            </div>
+            {displayText === "Manual" && (
+              <>
+                <Separator
+                  orientation="vertical"
+                  className="mx-1 data-[orientation=vertical]:h-3"
+                />
+                <div className="flex items-center gap-1">
+                  <ActivityIcon size={12} />
+                  {displaySlippage}
+                </div>
+              </>
+            )}
             <SlidersHorizontalIcon className="ml-1" size={12} />
           </div>
+          <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Swap Settings</DialogTitle>
+                <DialogDescription>
+                  Please specify parameters or leave blank for automatic selection.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="slippage" className="text-right text-xs text-muted-foreground">
+                    Max Slippage
+                  </label>
+                  <Input
+                    id="slippage"
+                    type="number"
+                    min={0}
+                    step={0.1}
+                    className="col-span-3"
+                    value={slippage}
+                    onChange={(e) => setSlippage(e.target.value)}
+                    placeholder="0.5%"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="priorityFee" className="text-right text-xs text-muted-foreground">
+                    Priority Fee
+                  </label>
+                  <Input
+                    id="priorityFee"
+                    type="number"
+                    min={0}
+                    step={0.1}
+                    className="col-span-3"
+                    value={priorityFee}
+                    onChange={(e) => setPriorityFee(e.target.value)}
+                    placeholder="0.0001"
+                  />
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button
+                  onClick={() => {
+                    // Можно добавить валидацию если нужно
+                    setModalOpen(false);
+                  }}
+                >
+                  Save
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
           <div className="h-23 relative px-3 py-3 bg-muted/40 rounded-md w-full border">
             <div className="flex justify-between">
               <div className="text-muted-foreground text-xs">Selling</div>

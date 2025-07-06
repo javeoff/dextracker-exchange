@@ -47,17 +47,38 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
          if (!candleSeriesRef.current || !dataRef.current) {
             return;
          }
-         const nowSec = Date.now();
-         const newData = [...dataRef.current.filter((d) => d.time !== nowSec), {
-            time: nowSec,
-            open: price,
-            high: price,
-            low: price,
-            close: price,
-         }];
-         candleSeriesRef.current.setData(newData as CandlestickData[]);
-      },
 
+         const now = Date.now();
+         const intervalSeconds = 60; // 1m интервал
+         const timeSec = Math.floor(now / 1000);
+         const candleTime = timeSec - (timeSec % intervalSeconds);
+
+         const candles = [...dataRef.current];
+         const lastCandle = candles[candles.length - 1];
+
+         if (lastCandle && lastCandle.time === candleTime) {
+            // обновляем последнюю свечу
+            const updatedCandle = {
+               ...lastCandle,
+               high: Math.max(lastCandle.high, price),
+               low: Math.min(lastCandle.low, price),
+               close: price,
+            };
+            candles[candles.length - 1] = updatedCandle;
+         } else {
+            // добавляем новую свечу
+            candles.push({
+               time: candleTime,
+               open: price,
+               high: price,
+               low: price,
+               close: price,
+            });
+         }
+
+         dataRef.current = candles;
+         candleSeriesRef.current.setData(candles as CandlestickData[]);
+      },
       addLimitLine: (type: 'long' | 'short', amount: number, price: number) => {
          const label = `${type}${amount}${price}`;
          if (!chartApiRef.current || price === 0) return;
