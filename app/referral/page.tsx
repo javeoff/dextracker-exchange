@@ -59,7 +59,7 @@ export default function Home() {
       <div className="w-full px-4 py-6 md:py-10 md:px-8 flex flex-col md:flex-row gap-6">
         <div className="flex-1 border rounded-xl shadow-md backdrop-blur-md bg-gradient-to-br 
   dark:from-black/50 dark:via-gray-800/60 dark:to-black/40
-  from-gray-200/60 via-gray-800/20 to-gray-200/40">
+  from-gray-500/20 via-white/20 to-gray-500/20">
           <Card className="bg-transparent border-none shadow-none">
             <CardContent className="p-6 space-y-4">
               <div className="text-sm text-muted-foreground">📩 Your referral code</div>
