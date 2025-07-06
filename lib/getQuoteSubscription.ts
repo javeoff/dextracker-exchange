@@ -2,8 +2,8 @@ import { SubscribeData } from '@/components/ui/trades-chart';
 import memoize from 'memoizee';
 import { Coin } from './types';
 
-function createSubscription(symbol: string) {
-  const ws = new WebSocket(`wss://api.cryptoscan.pro/quote?symbol=${symbol}`);
+function createSubscription(address: string) {
+  const ws = new WebSocket(`wss://api.cryptoscan.pro/quote?symbol=${address}`);
   const subscribers = new Set<(data: SubscribeData) => void>();
 
   let coinsData: SubscribeData | null = null; // Кэш до первого сабскрайба

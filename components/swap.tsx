@@ -47,7 +47,7 @@ export function Swap() {
   const [symbol, setSymbol] = useState<string>();
   const [markets, setMarkets] = useState<Record<string, SubscribeData>>({});
   const [exchange, setExchange] = useState<string>();
-  const { subscribe } = getQuoteSubscription(symbol || path.replace('/', ''));
+  const { subscribe } = getQuoteSubscription(path.replace('/', ''));
   const [fromAmount, setFromAmount] = useState<string>();
   const [toAmount, setToAmount] = useState<string>();
   const query = useSearchParams();
