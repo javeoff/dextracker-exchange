@@ -77,7 +77,7 @@ export default function Page() {
                     <div className="text-muted-foreground text-xs">
                       Vol:
                     </div>
-                      <div className="font-medium text-sm">${getBigNumber('stats24h' in coin ? (coin.stats24h.buyVolume + coin.stats24h.sellVolume) : coin.volume)}</div>
+                      <div className="font-medium text-sm">${getBigNumber('stats24h' in coin ? (coin.stats24h.buyVolume + coin.stats24h.sellVolume) : (coin as Coin).volume)}</div>
                   </div>
                 </div>
               </div>
