@@ -15,7 +15,7 @@ export function SidebarRight({
       className="sticky top-0 hidden h-svh border-l lg:flex w-(--sidebar-width)"
       {...props}
     >
-      <SidebarContent className="my-5 px-2">
+    <SidebarContent className="px-2">
         <Swap />
       </SidebarContent>
     </Sidebar>

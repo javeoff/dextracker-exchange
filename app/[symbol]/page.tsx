@@ -48,7 +48,7 @@ export default function Page() {
       <WalletProvider wallets={[]} autoConnect>
         <WalletModalProvider>
           <SidebarInset className="overflow-hidden mt-15 md:mt-0">
-            <header className="bg-background sticky top-1 flex h-14 shrink-0 items-center gap-2 border border-bottom">
+            <header className="bg-background sticky top-1 flex h-14 shrink-0 items-center gap-2 border-b">
               <div className="flex flex-1 items-center h-10 gap-4 px-4">
                 <div className="flex gap-2 items-center">
                   <div className="px-2">

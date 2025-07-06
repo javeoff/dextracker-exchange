@@ -216,8 +216,8 @@ export function Swap() {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <div className="flex flex-wrap gap-5 md:gap-3 flex-row lg:flex-col justify-between md:justify-initial ">
-        <div className="lg:min-w-full sm:min-w-70 min-w-full relative flex flex-col gap-2 bg-background rounded rounded-md p-2 border">
+      <div className="mt-4 lg:py-0 py-4 flex flex-wrap gap-5 md:gap-3 flex-row lg:flex-col justify-between md:justify-initial">
+        <div className="no-scrollbar lg:min-w-full sm:min-w-70 min-w-full relative flex flex-col gap-2 bg-background rounded rounded-md p-2 border">
           <div
             className="flex items-center gap-1 select-none cursor-pointer hover:bg-muted/50 border rounded-lg py-1 px-2 w-max text-xs font-semibold text-foreground/80"
             onClick={() => setModalOpen(true)}
@@ -328,29 +328,27 @@ export function Swap() {
                   setFromSymbol(coin.symbol);
                 }}
               >
-                <div>
-                  <div
-                    className="mt-2 h-max cursor-pointer select-none bg-muted hover:bg-muted/50 rounded w-max py-1 px-2 flex items-center gap-1 font-semibold text-sm"
-                  >
-                    <div>
-                      {!!fromAddress && (
-                        <CoinAvatar address={fromAddress!} width={15} height={15} />
-                      )}
-                    </div>
-                    {fromSymbol}
+                <div
+                  className="mt-2 h-max cursor-pointer select-none bg-muted hover:bg-muted/50 rounded w-max py-1 px-2 flex items-center gap-1 font-semibold text-sm"
+                >
+                  <div>
+                    {!!fromAddress && (
+                      <CoinAvatar address={fromAddress!} width={15} height={15} />
+                    )}
                   </div>
-                  <div className="relative bottom-1 h-max flex-1">
-                    <input
-                      className="focus:outline-none text-right w-full border-none bg-transparent py-2 text-2xl font-bold"
-                      placeholder="0.00"
-                      onChange={(e) => {
-                        setFromAmount(e.currentTarget.value ? e.currentTarget.value : undefined)
-                      }}
-                      value={fromAmount !== undefined ? String(fromAmount) : ''}
-                    />
-                  </div>
+                  {fromSymbol}
                 </div>
               </CommandSearch>
+              <div className="relative bottom-1 h-max flex-1">
+                <input
+                  className="focus:outline-none text-right w-full border-none bg-transparent py-2 text-2xl font-bold"
+                  placeholder="0.00"
+                  onChange={(e) => {
+                    setFromAmount(e.currentTarget.value ? e.currentTarget.value : undefined)
+                  }}
+                  value={fromAmount !== undefined ? String(fromAmount) : ''}
+                />
+              </div>
             </div>
             <div className="absolute right-3 bottom-2 text-muted-foreground text-[10px]">
               ${inputUsd ? getPrice(inputUsd) : 0}
