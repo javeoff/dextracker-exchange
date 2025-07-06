@@ -22,23 +22,16 @@ import { useState, useEffect, ReactNode } from "react"
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar"
 import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
-
-interface Coin {
-  id: string;
-  cexes: string[];
-  liquidity: number;
-  mcap: number;
-  symbol: string;
-  name: string;
-  icon: string;
-}
+import { Coin } from "@/lib/types"
 
 export function CommandSearch({
   children,
   onClick,
+  withKeybind,
   ...props
 }: DialogProps & {
-  children?: ReactNode
+  withKeybind?: boolean;
+  children?: ReactNode;
   onClick?: (coin: Coin) => void;
 }) {
   const query = useSearchParams()
@@ -54,6 +47,26 @@ export function CommandSearch({
     { maxWait: 500 },
   );
   const [coins, setCoins] = useState<Coin[]>([]);
+
+  useEffect(() => {
+    if (!withKeybind) {
+      return;
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isMacOS = navigator.platform.toUpperCase().indexOf('MAC') >= 0
+      const modKey = isMacOS ? e.metaKey : e.ctrlKey
+
+      if (modKey && e.key.toLowerCase() === 'k') {
+        e.preventDefault()
+        setOpen(true)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [withKeybind])
+
 
   useEffect(() => {
     if (!search) {

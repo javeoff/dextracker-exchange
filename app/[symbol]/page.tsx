@@ -48,10 +48,10 @@ export default function Page() {
       <WalletProvider wallets={[]} autoConnect>
         <WalletModalProvider>
           <SidebarInset className="overflow-hidden mt-15 md:mt-0">
-            <header className="bg-background sticky top-0 flex h-14 shrink-0 items-center gap-2 border border-bottom">
+            <header className="bg-background sticky top-1 flex h-14 shrink-0 items-center gap-2 border border-bottom">
               <div className="flex flex-1 items-center h-10 gap-4 px-4">
                 <div className="flex gap-2 items-center">
-                  <div className="p-2">
+                  <div className="px-2">
                     <CoinAvatar address={coin.address} width={32} height={32} />
                   </div>
                   <div className="h-full flex items-center">
@@ -77,13 +77,13 @@ export default function Page() {
                     <div className="text-muted-foreground text-xs">
                       Vol:
                     </div>
-                    <div className="font-medium text-sm">${getBigNumber(coin.volume)}</div>
+                    <div className="font-medium text-sm">${getBigNumber(coin.stats24h.buyVolume + coin.stats24h.sellVolume)}</div>
                   </div>
                 </div>
               </div>
             </header>
 
-            <div className="flex flex-1 flex-col gap-4 my-5 md:my-o">
+            <div className="flex flex-1 flex-col gap-4 my-1 md:my-o">
               <div className="block lg:hidden px-4">
                 <Swap />
               </div>

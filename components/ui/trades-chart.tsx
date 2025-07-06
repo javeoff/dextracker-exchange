@@ -6,7 +6,6 @@ import { BigNumber } from "bignumber.js";
 import { toast } from "sonner";
 import { getBigNumber } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "./sidebar";
 import { CandleData, Chart } from "./candle-chart";
 import { formatPrice } from "./price-formatter";
 import { Button } from "./button";
@@ -269,7 +268,7 @@ export function TradesChart({
     <div
       className="relative"
     >
-      <div className="flex mb-1 justify-between px-4 pt-2">
+      <div className="flex py-1 px-4 justify-between">
         <div className="flex items-center gap-4">
           <div className="flex gap-2">
             <Button
@@ -328,7 +327,6 @@ export function TradesChart({
             </Select>
           </div>
         </div>
-        <SidebarTrigger />
       </div>
       <div className="overflow-hidden relative">
         <Chart

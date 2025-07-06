@@ -4,7 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/header";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ThemeProvider } from "next-themes";
-import { Toaster } from "@/components/ui/sonner"
+import { Toaster } from "@/components/ui/sonner";
 import { SupportWidget } from "@/components/support-widget";
 
 const geistSans = Geist({

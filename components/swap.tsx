@@ -5,11 +5,10 @@ import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import { ADDRESS_SYMBOLS, cn, getBigNumber, getPrice } from "@/lib/utils";
 import { ChangeIcon } from "./ui/change-icon";
-import { useState, useEffect, useMemo, Suspense } from "react";
+import { useState, useEffect, useMemo, Suspense, useLayoutEffect } from "react";
 import { getQuoteSubscription } from "@/lib/getQuoteSubscription";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { BigNumber } from "bignumber.js";
-import { CommandSearch } from "./command-search";
 import { SubscribeData } from "./ui/trades-chart";
 import { CoinAvatar } from "./CoinAvatar";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
@@ -21,6 +20,7 @@ import { useTradingWallet } from "@/hooks/use-trading-wallet";
 import { Coin } from "@/lib/types";
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader, DialogFooter } from "./ui/dialog";
 import { Input } from "./ui/input";
+import { CommandSearch } from "./command-search";
 
 const getBalances = async (walletAddress: string) => {
   if (!walletAddress) {
@@ -48,36 +48,41 @@ export function Swap() {
   const [markets, setMarkets] = useState<Record<string, SubscribeData>>({});
   const [exchange, setExchange] = useState<string>();
   const { subscribe } = getQuoteSubscription(symbol || path.replace('/', ''));
-  const [fromAmount, setFromAmount] = useState<number>();
-  const [toAmount, setToAmount] = useState<number>();
+  const [fromAmount, setFromAmount] = useState<string>();
+  const [toAmount, setToAmount] = useState<string>();
   const query = useSearchParams();
   const [balances, setBalances] = useState<Record<string, { uiAmount: number }>>({});
   const [dexExchange, setDexExchange] = useState<string | null>()
   const [fromAddress, setFromAddress] = useState<string | null>('So11111111111111111111111111111111111111112')
   const [toAddress, setToAddress] = useState<string | null>(localStorage.getItem('dexAddress'));
   const [fromSymbol, setFromSymbol] = useState<string | null>(ADDRESS_SYMBOLS[fromAddress!] || symbol!)
-  const [toSymbol, setToSymbol] = useState<string | null>(ADDRESS_SYMBOLS[toAddress!] || symbol!);
+  const [toSymbol, setToSymbol] = useState<string>();
   const [swapTxn, setSwapTxn] = useState<string>();
+  const [inputUsd, setInputUsd] = useState<number>(0);
+  const [outputUsd, setOutputUsd] = useState<number>(0);
   const [requestId, setRequestId] = useState<string>();
   const fromBalance = useMemo(() => balances[fromAddress!]?.uiAmount || 0, [fromAddress, balances]);
   const toBalance = useMemo(() => balances[toAddress!]?.uiAmount || 0, [toAddress, balances]);
   const debouncedFromAmount = useDebouncedValue(fromAmount!, 150)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const unsubscribe = subscribe((data) => {
       if ('coins' in data) {
         const coin = (data.coins as Coin[]).sort((a, b) => b.liquidity - a.liquidity)[0];
+        console.log('coin', coin.symbol)
         setSymbol((prev) => !prev ? coin.symbol : prev)
+        setToSymbol((prev) => !prev ? coin.symbol : prev)
         setToAddress((prev) => !prev ? coin.address : prev)
-        setDexExchange((prev) => !prev ? coin.exchange : prev)
         return;
       }
       if (!data.price) {
         return;
       }
 
+      setDexExchange((prev) => !prev ? data.exchange : prev)
+
       if (data.exchange === exchange && exchange && fromAmount) {
-        setToAmount(new BigNumber(fromAmount).div(data.price).toNumber())
+        setToAmount(new BigNumber(fromAmount).div(data.price).toFixed())
       }
       setMarkets((prev) => {
         return {
@@ -89,13 +94,13 @@ export function Swap() {
     return () => {
       unsubscribe()
     }
-  }, [subscribe, exchange, fromAmount, setSymbol])
+  }, [subscribe, exchange, fromAmount, setSymbol, setToSymbol])
 
   useEffect(() => {
     if (!exchange || !markets[exchange] || !fromAmount || !exchange) {
       return
     }
-    setToAmount(new BigNumber(fromAmount).div(markets[exchange].price).toNumber())
+    setToAmount(new BigNumber(fromAmount).div(markets[exchange].price).toFixed())
   }, [markets, exchange, setToAmount, fromAmount])
 
   console.log('toAddress', toAddress, balances)
@@ -109,15 +114,18 @@ export function Swap() {
       return;
     }
     const loadPrice = async () => {
-      if (!debouncedFromAmount || !toAddress) {
+      if (!debouncedFromAmount || !toAddress || !Number.isFinite(Number(debouncedFromAmount))) {
         return;
       }
       const params = new URLSearchParams({
         address: toAddress,
-        amount: String(debouncedFromAmount),
+        amount: getPrice(Number(debouncedFromAmount)),
       })
       if (fromAddress) {
         params.set('addressFrom', fromAddress)
+      }
+      if (exchange) {
+        params.set('exchange', exchange)
       }
       if (publicKey) {
         params.set('walletAddress', publicKey.toString())
@@ -129,7 +137,9 @@ export function Swap() {
       const res = await fetch(`https://api.cryptoscan.pro/swap?${params}`)
       const data = await res.json();
       const price = data.price;
-      setToAmount(new BigNumber(debouncedFromAmount).div(price).toNumber());
+      setInputUsd(data.inputUsd)
+      setOutputUsd(data.outUsd)
+      setToAmount(getPrice(new BigNumber(debouncedFromAmount).div(price).toNumber()));
       setSwapTxn(data.transaction);
       setRequestId(data.requestId);
     }
@@ -298,14 +308,14 @@ export function Swap() {
                 <Button
                   variant="secondary"
                   className="cursor-pointer text-muted-foreground text-xs rounded-sm block h-5 py-0 m-0 px-2"
-                  onClick={() => setFromAmount(Number(getPrice(fromBalance / 2)))}
+                  onClick={() => setFromAmount(getPrice(fromBalance / 2))}
                 >
                   HALF
                 </Button>
                 <Button
                   variant="secondary"
                   className="cursor-pointer text-muted-foreground text-xs rounded-sm block h-5 py-0 m-0 px-2"
-                  onClick={() => setFromAmount(Number(getPrice(fromBalance)))}
+                  onClick={() => setFromAmount(getPrice(fromBalance * 0.98))}
                 >
                   MAX
                 </Button>
@@ -318,28 +328,32 @@ export function Swap() {
                   setFromSymbol(coin.symbol);
                 }}
               >
-                <div className="mt-2 h-max cursor-pointer select-none bg-muted hover:bg-muted/50 rounded w-max py-1 px-2 flex items-center gap-1 font-semibold text-sm">
-                  <div>
-                    {!!fromAddress && (
-                      <CoinAvatar address={fromAddress!} width={15} height={15} />
-                    )}
+                <div>
+                  <div
+                    className="mt-2 h-max cursor-pointer select-none bg-muted hover:bg-muted/50 rounded w-max py-1 px-2 flex items-center gap-1 font-semibold text-sm"
+                  >
+                    <div>
+                      {!!fromAddress && (
+                        <CoinAvatar address={fromAddress!} width={15} height={15} />
+                      )}
+                    </div>
+                    {fromSymbol}
                   </div>
-                  {fromSymbol}
+                  <div className="relative bottom-1 h-max flex-1">
+                    <input
+                      className="focus:outline-none text-right w-full border-none bg-transparent py-2 text-2xl font-bold"
+                      placeholder="0.00"
+                      onChange={(e) => {
+                        setFromAmount(e.currentTarget.value ? e.currentTarget.value : undefined)
+                      }}
+                      value={fromAmount !== undefined ? String(fromAmount) : ''}
+                    />
+                  </div>
                 </div>
               </CommandSearch>
-              <div className="relative bottom-1 h-max flex-1">
-                <input
-                  className="focus:outline-none text-right w-full border-none bg-transparent py-2 text-2xl font-bold"
-                  placeholder="0.00"
-                  onChange={(e) => {
-                    setFromAmount(e.currentTarget.value ? Number(e.currentTarget.value) : undefined)
-                  }}
-                  value={fromAmount !== undefined ? String(fromAmount) : ''}
-                />
-              </div>
             </div>
             <div className="absolute right-3 bottom-2 text-muted-foreground text-[10px]">
-              ${fromAmount ? fromAmount.toFixed() : '0'}
+              ${inputUsd ? getPrice(inputUsd) : 0}
             </div>
           </div>
 
@@ -349,10 +363,10 @@ export function Swap() {
               onClick={() => {
                 setFromAddress(toAddress);
                 setToAddress(fromAddress);
-                setFromSymbol(ADDRESS_SYMBOLS[toAddress!] || symbol!);
-                setToSymbol(ADDRESS_SYMBOLS[fromAddress!] || symbol!);
-                setFromAmount(Number(getPrice(toAmount!)));
-                setToAmount(Number(getPrice(fromAmount!)));
+                setFromSymbol(toSymbol!);
+                setToSymbol(fromSymbol!);
+                setFromAmount(getPrice(Number(toAmount!)));
+                setToAmount(getPrice(Number(fromAmount!)));
               }}
             >
               <ChangeIcon />
@@ -376,7 +390,9 @@ export function Swap() {
                   setToSymbol(coin.symbol);
                 }}
               >
-                <div className="mt-2 h-max cursor-pointer select-none bg-muted hover:bg-muted/50 rounded w-max py-1 px-2 flex items-center gap-1 font-semibold text-sm">
+                <div
+                  className="mt-2 h-max cursor-pointer select-none bg-muted hover:bg-muted/50 rounded w-max py-1 px-2 flex items-center gap-1 font-semibold text-sm"
+                >
                   <div>
                     {!!toAddress && (
                       <CoinAvatar address={toAddress!} width={15} height={15} />
@@ -389,13 +405,13 @@ export function Swap() {
                 <input
                   className="focus:outline-none text-right w-full border-none bg-transparent py-2 text-2xl font-bold"
                   placeholder="0.00"
-                  onKeyPress={(e) => setToAmount(e.currentTarget.value ? Number(e.currentTarget.value) : undefined)}
-                  value={toAmount ? getPrice(toAmount) : ''}
+                  onKeyPress={(e) => setToAmount(e.currentTarget.value ? e.currentTarget.value : undefined)}
+                  value={toAmount ? toAmount : ''}
                 />
               </div>
             </div>
             <div className="absolute right-3 bottom-2 text-muted-foreground text-[10px]">
-              $0
+              ${outputUsd ? getPrice(outputUsd) : 0}
             </div>
           </div>
           <div className="w-full mt-2">
@@ -421,7 +437,7 @@ export function Swap() {
               onClick={() => {
                 setExchange(market.exchange !== exchange ? market.exchange : undefined)
                 if (fromAmount && exchange) {
-                  setToAmount(new BigNumber(fromAmount).div(markets[market.exchange]?.price).toNumber())
+                  setToAmount(new BigNumber(fromAmount).div(markets[market.exchange]?.price).toFixed())
                 }
               }}
             >

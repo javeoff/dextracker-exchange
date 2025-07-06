@@ -57,23 +57,25 @@ export default function Home() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <div className="w-full px-4 py-6 md:py-10 md:px-8 flex flex-col md:flex-row gap-6">
-        <div className="flex-1 border bg-gradient-to-br from-black/50 via-gray-800/60 to-black/40 backdrop-blur-md rounded-xl shadow-md">
+        <div className="flex-1 border rounded-xl shadow-md backdrop-blur-md bg-gradient-to-br 
+  dark:from-black/50 dark:via-gray-800/60 dark:to-black/40
+  from-gray-200/60 via-gray-800/20 to-gray-200/40">
           <Card className="bg-transparent border-none shadow-none">
             <CardContent className="p-6 space-y-4">
               <div className="text-sm text-muted-foreground">📩 Your referral code</div>
-              <div className="w-max flex items-center gap-2 bg-muted p-1 px-2 rounded-lg text-lg font-semibold">
+              <div className="w-max flex items-center gap-2 bg-muted/60 dark:bg-input/30 p-1 px-2 rounded-lg text-lg font-semibold">
                 {refCode}
-                <Button size="icon" variant="ghost">
+                <Button size="icon" variant="ghost" className="cursor-pointer">
                   <Copy className="w-4 h-4" />
                 </Button>
               </div>
 
               <div className="text-sm text-muted-foreground">💰 Share and Earn</div>
-              <div className="w-full md:max-w-xs flex items-center gap-2 bg-muted px-2 py-1 rounded-lg text-sm break-all">
+              <div className="w-full md:max-w-xs flex items-center justify-between gap-2 bg-muted/60 dark:bg-input/30 px-2 py-1 rounded-lg text-sm break-all">
                 <div className="truncate">
                   https://cryptoscan.pro?ref={refCode}
                 </div>
-                <Button size="icon" variant="ghost">
+                <Button size="icon" variant="ghost" className="cursor-pointer">
                   <Copy className="w-4 h-4" />
                 </Button>
               </div>
@@ -83,7 +85,7 @@ export default function Home() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <Button className="w-full mt-2" variant="outline">
+                <Button className="w-full mt-2 bg-background/40 cursor-pointer" variant="outline">
                   View Tutorial
                 </Button>
                 <Button className="w-full mt-2" disabled={true}>

@@ -23,11 +23,20 @@ export interface Referral {
 }
 
 export interface Coin {
+  id: string;
+  cexes: string[];
+  liquidity: number;
+  mcap: number;
   symbol: string;
+  name: string;
+  icon: string;
   exchange: string;
   address: string;
-  liquidity: number;
   market_cap: number;
   volume: number;
+  stats24h: {
+    buyVolume: number;
+    sellVolume: number;
+  }
 }
 
