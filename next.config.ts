@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import "dotenv/config";
 
 const nextConfig: NextConfig = {
 	webpack(config) {
@@ -7,6 +8,9 @@ const nextConfig: NextConfig = {
 			use: ['@svgr/webpack'],
 		});
 		return config;
+	},
+	env: {
+		DEV_ENDPOINT: process.env.DEV_ENDPOINT,
 	},
 	images: {
 		remotePatterns: [

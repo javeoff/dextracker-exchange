@@ -72,7 +72,7 @@ export function DataTable<TData, TValue>({
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id} className="z-10 select-none sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                  <TableHead key={header.id} className="z-20 select-none sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                     {header.isPlaceholder
                       ? null
                       : flexRender(

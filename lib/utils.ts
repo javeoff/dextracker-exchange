@@ -71,6 +71,15 @@ export function getSymbol(s: string) {
     .toUpperCase()
 }
 
+export function getFullNetwork(n: string) {
+  switch(n) {
+    case "sol":
+      return "solana"
+    default:
+      return n
+  }
+}
+
 export function getTagImage(tag: string) {
   switch (tag) {
     case "axiom":

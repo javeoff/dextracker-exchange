@@ -36,6 +36,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
+    "dotenv": "^17.1.0",
     "lightweight-charts": "^5.0.7",
     "lucide-react": "^0.522.0",
     "memoizee": "^0.4.17",

@@ -3,7 +3,7 @@ import memoize from 'memoizee';
 import { Coin } from './types';
 
 function createSubscription(address: string) {
-  const ws = new WebSocket(`wss://api.cryptoscan.pro/quote?symbol=${address}`);
+  const ws = new WebSocket((process.env.DEV_ENDPOINT || 'wss://api.cryptoscan.pro/') + `quote?symbol=${address}`);
   const subscribers = new Set<(data: SubscribeData) => void>();
 
   let coinsData: SubscribeData | null = null; // Кэш до первого сабскрайба

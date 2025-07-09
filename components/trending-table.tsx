@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { DataTable } from "./data-table";
-import { cn, getAgo, getBigNumber, getPrice } from "@/lib/utils";
+import { cn, getAgo, getBigNumber, getFullNetwork, getPrice } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ArrowDown, ArrowUp, ArrowUpDown, FilterIcon } from "lucide-react";
 import { Button } from "./ui/button";
@@ -38,6 +38,22 @@ const columns: ColumnDef<TrendingItem>[] = [
             width={32}
             height={32}
           />
+          <div className="flex -ml-4 mt-4 z-10">
+            {row.original.networks?.map((n, idx) => (
+              <div
+                key={idx}
+                className="w-[14px] h-[14px] -ml-2"
+              >
+              <Image
+                className="border rounded rounded-full bg-muted"
+                alt={n}
+                src={"/" + getFullNetwork(n) + ".png"}
+                width={14}
+                height={14}
+              />
+              </div>
+            ))}
+          </div>
           <div
             className={cn("flex flex-col", row.original.rug_ratio >= 0.2 ? 'text-orange-300' : '', row.original.rug_ratio >= 0.5 ? 'text-orange-500' : '', row.original.rug_ratio >= 0.8 ? 'text-red-500' : '')}
           >
@@ -64,9 +80,9 @@ const columns: ColumnDef<TrendingItem>[] = [
               </div>
             </span>
             {!!row.original.address && (
-            <div className="text-[10px] text-muted-foreground">
-              {row.original.address.slice(0, 5)}...{row.original.address.slice(-3)}
-            </div>
+              <div className="text-[10px] text-muted-foreground">
+                {row.original.address.slice(0, 5)}...{row.original.address.slice(-3)}
+              </div>
             )}
           </div >
         </div >
@@ -912,23 +928,27 @@ export function TrendingTable() {
     if (tableRef.current) {
       scrollTop.current = tableRef.current.scrollTop;
     }
-    const ws = new WebSocket('wss://api.cryptoscan.pro/trending')
+    const ws = new WebSocket((process.env.DEV_ENDPOINT || 'wss://api.cryptoscan.pro/') + 'trending')
     ws.onmessage = (msg) => {
       const trendingItems = JSON.parse(msg.data)
-      setTrending(trendingItems.map((t: Record<string, string | number>) => ({
-        ...t,
-        liquidity: Number(t.liquidity),
-        volume24: Number(t.volume24),
-        volume: Number(t.volume),
-        buys: Number(t.buys),
-        sells: Number(t.sells),
-        net: Number(t.net),
-        txs: Number(t.txs),
-        spread: Number(t.spread || 0),
-        price_change_percent1m: Number(t.price_change_percent1m),
-        price_change_percent5m: Number(t.price_change_percent5m),
-        price_change_percent1h: Number(t.price_change_percent1h),
-      })))
+      setTrending(trendingItems.map((t: Record<string, string | number>) => {
+        delete t.id;
+
+        return {
+          ...t,
+          liquidity: Number(t.liquidity),
+          volume24: Number(t.volume24),
+          volume: Number(t.volume),
+          buys: Number(t.buys),
+          sells: Number(t.sells),
+          net: Number(t.net),
+          txs: Number(t.txs),
+          spread: Number(t.spread || 0),
+          price_change_percent1m: Number(t.price_change_percent1m),
+          price_change_percent5m: Number(t.price_change_percent5m),
+          price_change_percent1h: Number(t.price_change_percent1h),
+        }
+      }))
       requestAnimationFrame(() => {
         if (tableRef.current) {
           tableRef.current.scrollTop = scrollTop.current;
