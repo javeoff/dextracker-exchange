@@ -226,10 +226,10 @@ export function getAgo(date: Date, isShort = false): string {
   }
 
   if (Number.isNaN(milliseconds)) {
-    return `0ms ago`;
+    return `0ms${isShort ? '' : ' ago'}`;
   }
 
-  return `${(Math.abs(milliseconds)).toFixed(2)}ms ago`;
+  return `${(Math.abs(milliseconds)).toFixed(2)}ms${isShort ? '' : ' ago'}`;
 }
 
 export function formatTimeDifference(futureDate: Date, now: Date) {
