@@ -82,7 +82,7 @@ export function TradesStats({ subscribe }: Props) {
   }, [subscribe]);
 
   return (
-    <div className="relative flex mt-3 gap-2 h-8 overflow-x-scroll z-10 w-full no-scrollbar">
+    <div className="relative flex mt-0 gap-2 h-8 overflow-x-scroll z-10 w-full no-scrollbar">
       {Object.entries(stats).sort((a, b) => Math.abs(b[1].net) - Math.abs(a[1].net)).map(([key, stat]) => (
         <div key={key}>
           <div 

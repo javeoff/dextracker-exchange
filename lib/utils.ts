@@ -95,7 +95,7 @@ export function getExchangeColor(exchange: string) {
     case "htx-futures": return "#008cd6";
     case "bitget": return "#039faa";
     case "xt": return "#e09628";
-    case "pump_amm": return "#e09628";
+    case "pump_amm": return "#259068";
     case "solfi": return "#254b56";
     case "ray_v4": return "#61297c";
     case "raydium_clmm": return "#61297c";

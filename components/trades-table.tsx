@@ -231,34 +231,44 @@ interface Props {
 export function TradesTable({ subscribe }: Props) {
   const isPausedRef = useRef(false);
   const [data, setData] = useState<SubscribeData[]>([]);
+  const bufferRef = useRef<SubscribeData[]>([]); // буфер для данных во время паузы
 
   const onPaused = (isPaused: boolean) => {
     isPausedRef.current = isPaused;
-  }
+
+    if (!isPaused && bufferRef.current.length > 0) {
+      setData((prev) => [...bufferRef.current, ...prev]);
+      bufferRef.current = [];
+    }
+  };
 
   useEffect(() => {
     subscribe((d) => {
-      if (!d.price) {
-        return;
-      }
+      if (!d.price) return;
+
       setData((prev) => {
-        const index = prev.findIndex(item => item.txn === d.txn)
+        const index = prev.findIndex(item => item.txn === d.txn);
         if (index !== -1 && 'tags' in d) {
-          const newData = [...prev]
-          newData[index] = d
-          return newData
-        } else if (!isPausedRef.current) {
-          return [d, ...prev]
+          const newData = [...prev];
+          newData[index] = d;
+          return newData;
         }
-        return prev;
-      })
-    })
-  }, [subscribe])
+
+        if (isPausedRef.current) {
+          bufferRef.current.unshift(d);
+          return prev;
+        }
+
+        return [d, ...prev];
+      });
+    });
+  }, [subscribe]);
+
   return (
     <DataTransparentTable
       columns={columns}
       data={data}
       onPaused={onPaused}
     />
-  )
+  );
 }
