@@ -34,7 +34,7 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
    const candleSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
    const previousRangeRef = useRef({ from: 0, to: 0 });
    const seriesPointsRef = useRef<Record<string, { time: number; value: number }[]>>({});
-   const lastPriceLabelMap = useRef(new Map<string, number>());
+   const lastPriceLabelMap = useRef(new Map<string, string>());
    const lastPriceMap = useRef(new Map<string, string>());
    const { resolvedTheme: theme } = useTheme();
 
@@ -155,7 +155,7 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
          if (lastPriceLabelMap.current.has(label)) {
             lastPriceMap.current.delete(lastPriceLabelMap.current.get(label)!);
          }
-         lastPriceLabelMap.current.set(label, price);
+         lastPriceLabelMap.current.set(label, String(price));
          lastPriceMap.current.set(getPrice(price), label)
 
          // Инициализация массива точек
@@ -166,7 +166,7 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
          seriesPointsRef.current[label].push({ time: minuteStart, value: price });
 
          // Обновить серию
-         priceSeriesRef.current[label].setData(seriesPointsRef.current[label]);
+         priceSeriesRef.current[label].setData(seriesPointsRef.current[label] as { time: Time, value: number }[]);
       },
 
       reflow: () => {
@@ -269,7 +269,6 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
             timeVisible: true,
             secondsVisible: false,
             borderColor: theme === 'dark' ? '#262626' : '#e6e6e6',
-            backgroundColor: theme === 'dark' ? '#0a0a0a' : '#ffffff',
             tickMarkFormatter: (time: number) => {
                const date = new Date(time * 1000);
                return date.toLocaleTimeString([], {
