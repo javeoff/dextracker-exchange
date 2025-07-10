@@ -99,9 +99,17 @@ export function DataTable<TData, TValue>({
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
+              {headerGroup.headers.map((header, idx) => {
+                const isFirst = idx === 0;
                 return (
-                  <TableHead key={header.id} className="z-20 select-none sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                  <TableHead
+                    key={header.id}
+                    className={cn(
+                      "z-20 select-none lg:sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+                      isFirst && "left-0 z-30 bg-background", // sticky left
+                      isFirst && "w-40 min-w-[10rem] max-w-[10rem]" // fixed width (optional)
+                    )}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -129,17 +137,26 @@ export function DataTable<TData, TValue>({
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
-                className="hover:cursor-pointer"
+                className="group hover:cursor-pointer"
                 data-state={row.getIsSelected() && "selected"}
                 onClick={() =>
                   router.push(`/${(row.original as { address: string }).address}`)
                 }
               >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
+                {row.getVisibleCells().map((cell, colIndex) => {
+                  const isFirst = colIndex === 0;
+                  return (
+                    <TableCell
+                      key={cell.id}
+                      className={cn(
+                        isFirst && "lg:sticky left-0 z-10 bg-background dark:group-hover:bg-[#181818] group-hover:bg-[#f9f9f9] transition-colors",
+                        isFirst && "min-w-[10rem]" // match header width
+                      )}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  )
+                })}
               </TableRow>
             ))
           ) : (

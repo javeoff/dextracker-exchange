@@ -129,6 +129,79 @@ const columns: ColumnDef<TrendingItem>[] = [
     },
   },
   {
+    accessorKey: "market_cap",
+    header: ({ column }) => (
+      <div className="relative flex items-center">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div>MCap</div>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            <p>Market Capitalization is a USD value of all exchanges</p>
+          </TooltipContent>
+        </Tooltip>
+        <Button
+          variant="ghost"
+          className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
+          onClick={() => column.toggleSorting()}
+        >
+          {column.getIsSorted() === "asc" && <ArrowUp className="text-foreground" size={16} />}
+          {column.getIsSorted() === "desc" && <ArrowDown className="text-foreground" size={16} />}
+          {!column.getIsSorted() && <ArrowUpDown size={16} />}
+        </Button>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" className="-mx-1 cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
+              {!column.getFilterValue() && <FilterIcon size={11} />}
+              {!!column.getFilterValue() && <FilterIcon className="text-foreground" size={12} />}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-40">
+            <div className="flex flex-col gap-2">
+              <Input
+                type="number"
+                placeholder="Min"
+                className="border rounded px-2 py-1"
+                value={(column.getFilterValue() as { min: number; max: number })?.min}
+                onChange={(e) => {
+                  const prev = column.getFilterValue() as { min: number; max: number } || {};
+                  column.setFilterValue({
+                    ...prev,
+                    min: e.target.value ? Number(e.target.value) : undefined,
+                  });
+                }}
+              />
+              <Input
+                type="number"
+                placeholder="Max"
+                className="border rounded px-2 py-1"
+                value={(column.getFilterValue() as { min: number; max: number })?.max}
+                onChange={(e) => {
+                  const prev = column.getFilterValue() as { min: number; max: number } || {};
+                  column.setFilterValue({
+                    ...prev,
+                    max: e.target.value ? Number(e.target.value) : undefined,
+                  });
+                }}
+              />
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div >
+    ),
+    enableColumnFilter: true,
+    sortDescFirst: true,
+    filterFn: (row, columnId, filterValue: { min: number; max: number }) => {
+      const value = row.getValue(columnId) as string;
+      return (filterValue.min ? Number(value) >= filterValue.min : true) &&
+        (filterValue.max ? Number(value) <= filterValue.max : true);
+    },
+    cell: ({ row }) => {
+      const marketCap = row.getValue("market_cap") as number;
+      return <div>${getBigNumber(marketCap)}</div>;
+    },
+  },
+  {
     accessorKey: "liquidity",
     header: ({ column }) => (
       <div className="relative flex items-center">
