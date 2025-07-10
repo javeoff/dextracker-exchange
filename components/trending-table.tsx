@@ -922,15 +922,18 @@ export function TrendingTable() {
   const [trending, setTrending] = useState<Record<string, TrendingItem>>({});
   const data = useMemo(() => Object.values(trending), [trending])
   const tableRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const scrollTop = useRef(0);
 
   useEffect(() => {
     if (tableRef.current) {
       scrollTop.current = tableRef.current.scrollTop;
     }
+    setIsLoading(true);
     const ws = new WebSocket((process.env.DEV_ENDPOINT || 'wss://api.cryptoscan.pro/') + 'trending')
     ws.onmessage = (msg) => {
       const trendingItems = JSON.parse(msg.data)
+      setIsLoading(false);
       setTrending(trendingItems.map((t: Record<string, string | number>) => {
         delete t.id;
 
@@ -958,12 +961,13 @@ export function TrendingTable() {
     return () => {
       ws.close()
     }
-  }, [setTrending])
+  }, [setTrending, setIsLoading])
 
   return (
     <DataTable
       columns={columns}
       data={data}
+      isLoading={isLoading}
     />
   )
 }

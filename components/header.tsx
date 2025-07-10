@@ -42,27 +42,15 @@ export function Header() {
 
           <NavigationMenu>
             <NavigationMenuList className="flex gap-2">
-              <NavigationMenuItem>
-                <Link href="/" legacyBehavior passHref>
-                  <NavigationMenuLink className="text-sm font-medium hover:underline">
-                    Trending
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link href="https://docs.cryptoscan.pro" target="_blank">
-                  <NavigationMenuLink className="text-sm font-medium hover:underline">
-                    Docs
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link href="https://docs.cryptoscan.pro/changelog" target="_blank">
-                  <NavigationMenuLink className="text-sm font-medium hover:underline">
-                    Changelog
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
+              <NavigationMenuLink href="/" className="text-sm font-medium hover:underline">
+                Trending
+              </NavigationMenuLink>
+              <NavigationMenuLink href="https://docs.cryptoscan.pro" target="_blank" className="text-sm font-medium hover:underline">
+                Docs
+              </NavigationMenuLink>
+              <NavigationMenuLink href="https://docs.cryptoscan.pro/changelog" target="_blank" className="text-sm font-medium hover:underline">
+                Changelog
+              </NavigationMenuLink>
             </NavigationMenuList>
           </NavigationMenu>
         </div>
@@ -99,7 +87,7 @@ export function Header() {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link href="/" legacyBehavior passHref>
+                <Link href="/">
                   <NavigationMenuLink className="px-4 py-2 text-sm font-medium hover:underline">
                     Trending
                   </NavigationMenuLink>

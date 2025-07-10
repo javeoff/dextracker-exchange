@@ -1,8 +1,8 @@
-import { createChart, CrosshairMode, IChartApi, ISeriesApi, LineStyle, Time, CandlestickSeries, LineSeries, HistogramSeries, CandlestickData, HistogramData, BarPrice } from "lightweight-charts";
+import { createChart, CrosshairMode, IChartApi, ISeriesApi, LineStyle, Time, CandlestickSeries, LineSeries, HistogramSeries, CandlestickData, HistogramData, BarPrice, PriceScaleMode } from "lightweight-charts";
 import { forwardRef, useImperativeHandle, useRef, useEffect, useState } from "react";
 import { formatPrice } from "./price-formatter";
 import { useTheme } from "next-themes";
-import { getBigNumber } from "@/lib/utils";
+import { getBigNumber, getExchangeColor, getPrice } from "@/lib/utils";
 
 export type CandleData = {
    time: number;
@@ -33,6 +33,9 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
    const chartApiRef = useRef<IChartApi | null>(null);
    const candleSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
    const previousRangeRef = useRef({ from: 0, to: 0 });
+   const seriesPointsRef = useRef<Record<string, { time: number; value: number }[]>>({});
+   const lastPriceLabelMap = useRef(new Map<string, number>());
+   const lastPriceMap = useRef(new Map<string, string>());
    const { resolvedTheme: theme } = useTheme();
 
    useEffect(() => {
@@ -99,7 +102,7 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
          }
 
          limitSeriesRef.current[label].update({
-            time: 0 as Time,
+            time: Math.floor(Date.now() / 1000) as Time,
             value: Number(price)
          });
       },
@@ -124,7 +127,7 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
          }
 
          limitSeriesRef.current[label].update({
-            time: 0 as Time,
+            time: Math.floor(Date.now() / 1000) as Time,
             value: Number(price)
          });
       },
@@ -132,26 +135,38 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
       addPriceLine: (label: string, price: number) => {
          if (!chartApiRef.current || !price) return;
 
+         const now = Math.floor(Date.now() / 1000);
+         const minuteStart = now - (now % 60); // начало текущей минуты
+
+         // Инициализация серии, если не существует
          if (!priceSeriesRef.current[label]) {
-            const color = getLabelColor(label);
+            const color = getExchangeColor(label);
             priceSeriesRef.current[label] = chartApiRef.current.addSeries(LineSeries, {
                color: color,
                lineWidth: 1,
                lineStyle: LineStyle.Solid,
                lastValueVisible: true,
-               priceLineVisible: true,
-               priceLineWidth: 1,
-               priceLineColor: color,
-               priceLineStyle: LineStyle.Solid,
+               priceLineVisible: false,
                crosshairMarkerVisible: false,
                title: label,
             });
          }
 
-         priceSeriesRef.current[label].update({
-            time: 0 as Time,
-            value: price
-         });
+         if (lastPriceLabelMap.current.has(label)) {
+            lastPriceMap.current.delete(lastPriceLabelMap.current.get(label)!);
+         }
+         lastPriceLabelMap.current.set(label, price);
+         lastPriceMap.current.set(getPrice(price), label)
+
+         // Инициализация массива точек
+         if (!seriesPointsRef.current) seriesPointsRef.current = {};
+         if (!seriesPointsRef.current[label]) seriesPointsRef.current[label] = [];
+
+         // Добавить новую точку
+         seriesPointsRef.current[label].push({ time: minuteStart, value: price });
+
+         // Обновить серию
+         priceSeriesRef.current[label].setData(seriesPointsRef.current[label]);
       },
 
       reflow: () => {
@@ -243,10 +258,7 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
          rightPriceScale: {
             visible: true,
             borderColor: theme === 'dark' ? '#262626' : '#e6e6e6',
-            scaleMargins: {
-               top: 0,
-               bottom: 0,
-            },
+            mode: PriceScaleMode.Normal,
          },
          leftPriceScale: {
             borderColor: theme === 'dark' ? '#262626' : '#e6e6e6',
@@ -256,6 +268,8 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
             barSpacing: 20,
             timeVisible: true,
             secondsVisible: false,
+            borderColor: theme === 'dark' ? '#262626' : '#e6e6e6',
+            backgroundColor: theme === 'dark' ? '#0a0a0a' : '#ffffff',
             tickMarkFormatter: (time: number) => {
                const date = new Date(time * 1000);
                return date.toLocaleTimeString([], {
@@ -266,6 +280,18 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
          },
          crosshair: {
             mode: CrosshairMode.Normal,
+         },
+         handleScroll: {
+            horzTouchDrag: true,
+            vertTouchDrag: true,
+            mouseWheel: true,
+            pressedMouseMove: true,
+         },
+         handleScale: {
+            axisPressedMouseMove: {
+               time: true,
+               price: true,
+            },
          },
       });
 
@@ -305,6 +331,33 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
 
       candleSeriesRef.current.setData(dataRef.current as CandlestickData[]);
       volumeSeriesRef.current.setData(volumeData as HistogramData[]);
+      let activeLabel: string | undefined;
+      chartApiRef.current.subscribeCrosshairMove((param) => {
+         if (!candleSeriesRef.current || !chartRef.current || !param.point) {
+            return;
+         }
+         const y = param.point.y;
+         const price = candleSeriesRef.current.coordinateToPrice(y);
+         const label = lastPriceMap.current.get(getPrice(price as number))
+         if (label) {
+            activeLabel = label;
+            priceSeriesRef.current[label].applyOptions({
+               lineWidth: 2,
+               lineStyle: LineStyle.Solid,
+               color: getExchangeColor(label),
+               priceLineVisible: true,
+               crosshairMarkerVisible: true,
+            });
+         }
+         if (!label && !!activeLabel) {
+            priceSeriesRef.current[activeLabel].applyOptions({
+               lineWidth: 1,
+               color: getExchangeColor(activeLabel),
+               priceLineVisible: false,
+               crosshairMarkerVisible: true,
+            });
+         }
+      })
 
       chartApiRef.current.subscribeCrosshairMove((param) => {
          if (!candleSeriesRef.current || !chartRef.current) {
@@ -319,6 +372,7 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
          if (onMove) {
             onMove(price as BarPrice, y, chartRef.current.clientWidth);
          }
+
       });
 
       chartApiRef.current.subscribeCrosshairMove((param) => {
@@ -357,16 +411,6 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
       };
    }, [initialData, theme, chartInterval, onMove]);
 
-   // Вспомогательная функция цвета для линий
-   function getLabelColor(label: string) {
-      if (label.toLowerCase().includes("long")) {
-         return "#17b979";
-      } else if (label.toLowerCase().includes("short")) {
-         return "#e54c67";
-      }
-      return "#555";
-   }
-
    return (
       <>
          <div
@@ -376,7 +420,7 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
                width: '100%',
                height: '100%',
                flex: '1 1 auto',
-               minHeight: '300px',
+               minHeight: '320px',
                minWidth: '200px',
                position: 'relative',
             }}
@@ -386,7 +430,7 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
             style={{
                gap: '5px',
                position: 'absolute',
-               top: 0,
+               top: 10,
                left: 0,
                padding: '8px',
                color: theme === 'dark' ? '#fff' : '#000',

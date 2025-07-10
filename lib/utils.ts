@@ -80,6 +80,40 @@ export function getFullNetwork(n: string) {
   }
 }
 
+export function hexToRgba(hex: string, alpha: number = 0.3): string {
+  const [r, g, b] = hex.match(/\w\w/g)!.map(x => parseInt(x, 16));
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+export function getExchangeColor(exchange: string) {
+  switch(exchange) {
+    case "orca": return "#ffd182";
+    case "lbank": return "#e0b828";
+    case "lbank-futures": return "#e0b828";
+    case "bitmart": return "#cacaca";
+    case "htx": return "#3a7291";
+    case "htx-futures": return "#008cd6";
+    case "bitget": return "#039faa";
+    case "xt": return "#e09628";
+    case "pump_amm": return "#e09628";
+    case "solfi": return "#254b56";
+    case "ray_v4": return "#61297c";
+    case "raydium_clmm": return "#61297c";
+    case "meteora_dlmm": return "#68392a";
+    case "kucoin": return "#449382";
+    case "kucoin-futures": return "#449382";
+    case "okx": return "#000000";
+    case "okx-futures": return "#000000";
+    case "upbit": return "#aac1f2";
+    case "coinex": return "#20e6b9";
+    case "phemex": return "#003fe6";
+    case "gate": return "#2354e6";
+    case "mexc": return "#0043ff";
+    case "mexc-futures": return "#0043ff";
+    default: return '#555555';
+  }
+}
+
 export function getTagImage(tag: string) {
   switch (tag) {
     case "axiom":

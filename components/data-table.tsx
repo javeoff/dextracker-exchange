@@ -22,10 +22,13 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import React from "react"
+import { Skeleton } from "./ui/skeleton"
+import { cn } from "@/lib/utils"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  isLoading?: boolean
 }
 
 const numberRangeFilter: FilterFn<{ min: number; max: number }> = (row, columnId, value) => {
@@ -38,6 +41,7 @@ const numberRangeFilter: FilterFn<{ min: number; max: number }> = (row, columnId
 export function DataTable<TData, TValue>({
   columns,
   data,
+  isLoading,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -86,13 +90,25 @@ export function DataTable<TData, TValue>({
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
+          {isLoading ? (
+            [...Array(10)].map((_, i) => (
+              <TableRow key={`skeleton-${i}`} className="animate-pulse">
+                {columns.map((_, j) => (
+                  <TableCell key={j}>
+                    <Skeleton className={cn("h-7 my-1 w-full", j === 0 && "w-40")} />
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
                 className="hover:cursor-pointer"
                 data-state={row.getIsSelected() && "selected"}
-                onClick={() => router.push(`/${(row.original as { address: string }).address}`)}
+                onClick={() =>
+                  router.push(`/${(row.original as { address: string }).address}`)
+                }
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>

@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SubscribeData } from "./ui/trades-chart";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import Image from "next/image";
@@ -229,7 +229,12 @@ interface Props {
 }
 
 export function TradesTable({ subscribe }: Props) {
+  const isPausedRef = useRef(false);
   const [data, setData] = useState<SubscribeData[]>([]);
+
+  const onPaused = (isPaused: boolean) => {
+    isPausedRef.current = isPaused;
+  }
 
   useEffect(() => {
     subscribe((d) => {
@@ -242,9 +247,10 @@ export function TradesTable({ subscribe }: Props) {
           const newData = [...prev]
           newData[index] = d
           return newData
-        } else {
+        } else if (!isPausedRef.current) {
           return [d, ...prev]
         }
+        return d;
       })
     })
   }, [subscribe])
@@ -252,6 +258,7 @@ export function TradesTable({ subscribe }: Props) {
     <DataTransparentTable
       columns={columns}
       data={data}
+      onPaused={onPaused}
     />
   )
 }

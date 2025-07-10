@@ -403,7 +403,7 @@ export function Swap() {
                 <input
                   className="focus:outline-none text-right w-full border-none bg-transparent py-2 text-2xl font-bold"
                   placeholder="0.00"
-                  onKeyPress={(e) => setToAmount(e.currentTarget.value ? e.currentTarget.value : undefined)}
+                  onChange={(e) => setToAmount(e.currentTarget.value ? e.currentTarget.value : undefined)}
                   value={toAmount ? toAmount : ''}
                 />
               </div>
@@ -468,11 +468,13 @@ export function Swap() {
                 </div>
               </div>
               <div className="flex flex-col gap-1 items-end">
-                <div className="overflow-x-scroll no-scrollbar whitespace-nowrap max-w-20 flex items-center gap-1 bg-background rounded-lg border text-[11px] w-max px-2 py-1 font-semibold text-foreground/80 relative left-2">
-                  <Avatar className="inline-flex items-center justify-center w-3 h-3 text-[10px] mr-1">
-                    <AvatarImage src={`/${market.exchange}.png`} />
-                    <AvatarFallback>{market.exchange.slice(0, 2)}</AvatarFallback>
-                  </Avatar>
+                <div className="overflow-x-scroll no-scrollbar whitespace-nowrap flex items-center gap-1 bg-background rounded-lg border text-[11px] w-max px-2 py-[1px] font-semibold text-foreground/80 relative left-2">
+                  <div className="rounded-full w-3 h-3">
+                    <Avatar>
+                      <AvatarImage src={`/${market.exchange}.png`} />
+                      <AvatarFallback>{market.exchange.slice(0, 2)}</AvatarFallback>
+                    </Avatar>
+                  </div>
                   {market.exchange}
                 </div>
                 <div className="text-xs font-bold flex gap-1 items-center text-[#69991b] dark:text-[#c8f284]">

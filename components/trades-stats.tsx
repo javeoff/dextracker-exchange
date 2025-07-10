@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { SubscribeData } from "./ui/trades-chart";
-import { getBigNumber } from "@/lib/utils";
+import { getBigNumber, getExchangeColor, hexToRgba } from "@/lib/utils";
 
 interface Props {
   subscribe: (cb: (data: SubscribeData) => void) => void;
@@ -82,10 +82,12 @@ export function TradesStats({ subscribe }: Props) {
   }, [subscribe]);
 
   return (
-    <div className="relative flex mt-3 gap-2 h-8 overflow-x-scroll w-full no-scrollbar">
+    <div className="relative flex mt-3 gap-2 h-8 overflow-x-scroll z-10 w-full no-scrollbar">
       {Object.entries(stats).sort((a, b) => Math.abs(b[1].net) - Math.abs(a[1].net)).map(([key, stat]) => (
         <div key={key}>
-          <div className="relative z-1 flex gap-1 items-center w-full text-xs bg-input/30 rounded-sm whitespace-nowrap">
+          <div 
+          className="relative z-1 flex gap-1 items-center w-full text-xs bg-input/30 rounded-sm whitespace-nowrap"
+          >
             <div className="px-2">
               {stat.exchange}
             </div>

@@ -268,14 +268,14 @@ export function TradesChart({
     <div
       className="relative"
     >
-      <div className="flex py-1 px-4 justify-between">
-        <div className="flex items-center gap-4">
+      <div className="relative z-11 flex py-1 px-4 justify-between bg-background/30 backdrop-blur supports-[backdrop-filter]:bg-background/30">
+        <div className="flex items-center gap-2">
           <div className="flex gap-2">
             <Button
               variant="ghost"
               onClick={() => setTimeframe('1m')}
               size={null}
-              className={"text-xs text-neutral-500 hover:text-white hover:bg-transparent " + (timeframe === '1m' ? 'text-white' : '')}
+              className={"cursor-pointer text-xs text-neutral-500 dark:hover:text-white hover:bg-transparent " + (timeframe === '1m' ? 'text-foreground' : '')}
             >
               1m
             </Button>
@@ -283,7 +283,7 @@ export function TradesChart({
               variant="ghost"
               onClick={() => setTimeframe('5m')}
               size={null}
-              className={"text-xs text-neutral-500 hover:text-white hover:bg-transparent " + (timeframe === '5m' ? 'text-white' : '')}
+              className={"cursor-pointer text-xs text-neutral-500 dark:hover:text-white hover:bg-transparent " + (timeframe === '5m' ? 'text-foreground' : '')}
             >
               5m
             </Button>
@@ -291,7 +291,7 @@ export function TradesChart({
               variant="ghost"
               onClick={() => setTimeframe('15m')}
               size={null}
-              className={"text-xs text-neutral-500 hover:text-white hover:bg-transparent " + (timeframe === '15m' ? 'text-white' : '')}
+              className={"cursor-pointer text-xs text-neutral-500 dark:hover:text-white hover:bg-transparent " + (timeframe === '15m' ? 'text-foreground' : '')}
             >
               15m
             </Button>
@@ -299,11 +299,12 @@ export function TradesChart({
               variant="ghost"
               onClick={() => setTimeframe('1h')}
               size={null}
-              className={"text-xs text-neutral-500 hover:text-white hover:bg-transparent " + (timeframe === '1h' ? 'text-white' : '')}
+              className={"cursor-pointer text-xs text-neutral-500 dark:hover:text-white hover:bg-transparent " + (timeframe === '1h' ? 'text-foreground' : '')}
             >
               1h
             </Button>
           </div>
+
           <Separator
             orientation="vertical"
             className="data-[orientation=vertical]:h-4"
@@ -314,7 +315,7 @@ export function TradesChart({
               value={exchange}
               onValueChange={setExchange}
             >
-              <SelectTrigger className="p-0 px-2 border-0 text-xs" size="sm">
+              <SelectTrigger className="py-0 px-2 border-0 text-xs" size="sm" style={{ height: '20px', background: 'transparent' }}>
                 <SelectValue placeholder="Select Exchange" />
               </SelectTrigger>
               <SelectContent>
@@ -328,7 +329,7 @@ export function TradesChart({
           </div>
         </div>
       </div>
-      <div className="overflow-hidden relative">
+      <div className="overflow-hidden relative bottom-5">
         <Chart
           ref={chartRef}
           initialData={initialData}
