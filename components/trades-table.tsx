@@ -250,7 +250,7 @@ export function TradesTable({ subscribe }: Props) {
         } else if (!isPausedRef.current) {
           return [d, ...prev]
         }
-        return d;
+        return prev;
       })
     })
   }, [subscribe])

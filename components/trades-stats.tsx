@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { SubscribeData } from "./ui/trades-chart";
-import { getBigNumber, getExchangeColor, hexToRgba } from "@/lib/utils";
+import { getBigNumber } from "@/lib/utils";
 
 interface Props {
   subscribe: (cb: (data: SubscribeData) => void) => void;
