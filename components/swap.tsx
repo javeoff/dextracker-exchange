@@ -3,11 +3,10 @@
 import { ActivityIcon, SettingsIcon, SlidersHorizontalIcon, SparklesIcon, WalletIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
-import { ADDRESS_SYMBOLS, cn, getBigNumber, getPrice } from "@/lib/utils";
+import { ADDRESS_SYMBOLS, getBigNumber, getPrice } from "@/lib/utils";
 import { ChangeIcon } from "./ui/change-icon";
-import { useState, useEffect, useMemo, Suspense, useLayoutEffect } from "react";
+import { useState, useEffect, useMemo, Suspense, Dispatch, SetStateAction } from "react";
 import { getQuoteSubscription } from "@/lib/getQuoteSubscription";
-import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { BigNumber } from "bignumber.js";
 import { SubscribeData } from "./ui/trades-chart";
 import { CoinAvatar } from "./CoinAvatar";
@@ -21,6 +20,7 @@ import { Coin } from "@/lib/types";
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader, DialogFooter } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { CommandSearch } from "./command-search";
+import { MarketCard } from "./market-card";
 
 const getBalances = async (walletAddress: string) => {
   if (!walletAddress) {
@@ -32,7 +32,7 @@ const getBalances = async (walletAddress: string) => {
   return data;
 }
 
-export function Swap() {
+export function Swap({ exchange, setExchange }: { exchange: string | undefined; setExchange: Dispatch<SetStateAction<string | undefined>> }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [slippage, setSlippage] = useState<string>();
   const [priorityFee, setPriorityFee] = useState<string>();
@@ -46,16 +46,14 @@ export function Swap() {
   const path = usePathname()
   const [symbol, setSymbol] = useState<string>();
   const [markets, setMarkets] = useState<Record<string, SubscribeData>>({});
-  const [exchange, setExchange] = useState<string>();
   const { subscribe } = getQuoteSubscription(path.replace('/', ''));
   const [fromAmount, setFromAmount] = useState<string>();
   const [toAmount, setToAmount] = useState<string>();
   const query = useSearchParams();
   const [balances, setBalances] = useState<Record<string, { uiAmount: number }>>({});
-  const [dexExchange, setDexExchange] = useState<string | null>()
-  const [fromAddress, setFromAddress] = useState<string | null>('So11111111111111111111111111111111111111112')
-  const [toAddress, setToAddress] = useState<string | null>(localStorage.getItem('dexAddress'));
-  const [fromSymbol, setFromSymbol] = useState<string | null>(ADDRESS_SYMBOLS[fromAddress!] || symbol!)
+  const [fromAddress, setFromAddress] = useState<string | undefined>('So11111111111111111111111111111111111111112')
+  const [toAddress, setToAddress] = useState<string | undefined>(localStorage.getItem('dexAddress') || undefined);
+  const [fromSymbol, setFromSymbol] = useState<string | undefined>(ADDRESS_SYMBOLS[fromAddress!] || symbol)
   const [toSymbol, setToSymbol] = useState<string>();
   const [swapTxn, setSwapTxn] = useState<string>();
   const [inputUsd, setInputUsd] = useState<number>(0);
@@ -65,8 +63,13 @@ export function Swap() {
   const toBalance = useMemo(() => balances[toAddress!]?.uiAmount || 0, [toAddress, balances]);
   const debouncedFromAmount = useDebouncedValue(fromAmount!, 150)
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    if (!subscribe) {
+      return;
+    }
+
     const unsubscribe = subscribe((data) => {
+      console.log('markets data', data)
       if ('coins' in data) {
         const coin = (data.coins as Coin[]).sort((a, b) => b.liquidity - a.liquidity)[0];
         console.log('coin', coin.symbol)
@@ -75,26 +78,32 @@ export function Swap() {
         setToAddress((prev) => !prev ? coin.address : prev)
         return;
       }
-      if (!data.price) {
+
+      if (data.price === undefined) {
         return;
       }
 
-      setDexExchange((prev) => !prev ? data.exchange : prev)
-
-      if (data.exchange === exchange && exchange && fromAmount) {
-        setToAmount(new BigNumber(fromAmount).div(data.price).toFixed())
-      }
+      console.log('markets', data)
       setMarkets((prev) => {
         return {
-          ...prev,
+          ...(prev || {}),
           [data.exchange]: data,
         }
       })
     })
+
     return () => {
+      console.log('markets unsib')
       unsubscribe()
     }
-  }, [subscribe, exchange, fromAmount, setSymbol, setToSymbol])
+  }, [subscribe, fromAmount])
+
+  useEffect(() => {
+    if (!fromAmount || !exchange || !markets[exchange]) {
+      return;
+    }
+    setToAmount(new BigNumber(fromAmount).div(markets[exchange].price).toFixed())
+  }, [markets, exchange, fromAmount])
 
   useEffect(() => {
     if (!exchange || !markets[exchange] || !fromAmount || !exchange) {
@@ -164,10 +173,10 @@ export function Swap() {
   const sortedMarkets = useMemo(() => {
     return Object.fromEntries(
       Object.entries(markets).sort((a, b) => {
-        if (!dexExchange) {
+        if (!exchange) {
           return 1;
         }
-        const exchangePrice = markets[dexExchange].price;
+        const exchangePrice = markets[exchange].price;
         if (!exchangePrice) {
           return 1;
         }
@@ -176,7 +185,7 @@ export function Swap() {
         return Math.abs(bSpread) - Math.abs(aSpread);
       })
     )
-  }, [markets, dexExchange])
+  }, [markets, exchange])
 
   const handleTradeClick = async () => {
     if (!swapTxn || !publicKey || !requestId) return;
@@ -422,67 +431,37 @@ export function Swap() {
             </Button>
           </div>
         </div>
+        {!!exchange && (
+          <MarketCard
+            setExchange={setExchange}
+            exchange={exchange}
+            markets={markets}
+            market={markets[exchange]}
+            fromAddress={fromAddress}
+            fromSymbol={fromSymbol}
+            fromAmount={fromAmount}
+            setToAmount={setToAmount}
+          />
+        )}
+        <div className="px-6">
+          <Separator />
+        </div>
         <div className="min-w-50 flex flex-1 flex-col gap-2 my-0 lg:my-0 overflow-scroll max-h-80 lg:border-none border lg:p-0 p-3 rounded lg:max-h-full w-full">
-          {Object.values(sortedMarkets).map((market) => (
-            <div
-              key={market.exchange}
-              className={
-                cn(
-                  "select-none cursor-pointer hover:bg-muted flex items-center justify-between gap-1 bg-input/30 px-3 py-1 rounded border",
-                  market.exchange === exchange ? ' border-[#a1c46e]' : ''
-                )
-              }
-              onClick={() => {
-                setExchange(market.exchange !== exchange ? market.exchange : undefined)
-                if (fromAmount && exchange) {
-                  setToAmount(new BigNumber(fromAmount).div(markets[market.exchange]?.price).toFixed())
-                }
-              }}
-            >
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-1">
-                  <div className="text-xs font-semibold flex gap-1 items-center">
-                    <span>1</span>
-                    <CoinAvatar
-                      className="border rounded-full inline-flex items-center justify-center w-6 h-6 text-[10px]"
-                      address={fromAddress || fromSymbol!} width={15} height={15}
-                    />
-                    <span>≈</span>
-                    <span>{getPrice(1 / market.price)}</span>
-                    <CoinAvatar
-                      className="border rounded-full inline-flex items-center justify-center w-6 h-6 text-[10px]"
-                      address={market?.address || market.symbol!} width={15} height={15}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <div className="text-xs font-bold flex gap-1 items-center">
-                    ${getPrice(market.price, true)}
-                    {' '}
-                    {dexExchange && !!markets[dexExchange] && (
-                      <span className="font-medium text-muted-foreground">
-                        ({new BigNumber(markets[market.exchange].price).div(markets[dexExchange].price).multipliedBy(100).minus(100).toFixed(1)}%)
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col gap-1 items-end">
-                <div className="overflow-x-scroll no-scrollbar whitespace-nowrap flex items-center gap-1 bg-background rounded-lg border text-[11px] w-max px-2 py-[1px] font-semibold text-foreground/80 relative left-2">
-                  <div className="rounded-full w-3 h-3">
-                    <Avatar>
-                      <AvatarImage src={`/${market.exchange}.png`} />
-                      <AvatarFallback>{market.exchange.slice(0, 2)}</AvatarFallback>
-                    </Avatar>
-                  </div>
-                  {market.exchange}
-                </div>
-                <div className="text-xs font-bold flex gap-1 items-center text-[#69991b] dark:text-[#c8f284]">
-                  0% FEE
-                </div>
-              </div>
-            </div>
-          ))}
+          {Object.values(sortedMarkets)
+            .filter((market) => market.exchange !== exchange)
+            .map((market) => (
+              <MarketCard
+                key={market.exchange}
+                setExchange={setExchange}
+                exchange={exchange}
+                markets={markets}
+                market={market}
+                fromAddress={fromAddress}
+                fromSymbol={fromSymbol}
+                fromAmount={fromAmount}
+                setToAmount={setToAmount}
+              />
+            ))}
         </div>
       </div >
     </Suspense>

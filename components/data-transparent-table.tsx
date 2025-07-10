@@ -87,12 +87,12 @@ export function DataTransparentTable<TData, TValue>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                onMouseEnter={() => pauseHandle(true)}
+                onMouseLeave={() => pauseHandle(false)}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
-                    onMouseEnter={() => pauseHandle(true)}
-                    onMouseLeave={() => pauseHandle(false)}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>

@@ -244,7 +244,7 @@ export function TradesTable({ subscribe }: Props) {
 
   useEffect(() => {
     subscribe((d) => {
-      if (!d.price) return;
+      if (d.price === undefined) return;
 
       setData((prev) => {
         const index = prev.findIndex(item => item.txn === d.txn);

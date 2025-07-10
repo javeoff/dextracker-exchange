@@ -136,7 +136,7 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
          if (!chartApiRef.current || !price) return;
 
          const now = Math.floor(Date.now() / 1000);
-         const minuteStart = now - (now % 60); // начало текущей минуты
+         const minuteStart = now - (now % 60);
 
          // Инициализация серии, если не существует
          if (!priceSeriesRef.current[label]) {
@@ -161,6 +161,10 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
          // Инициализация массива точек
          if (!seriesPointsRef.current) seriesPointsRef.current = {};
          if (!seriesPointsRef.current[label]) seriesPointsRef.current[label] = [];
+
+         if (seriesPointsRef.current[label].some((v) => v.time === minuteStart)) {
+            return;
+         }
 
          // Добавить новую точку
          seriesPointsRef.current[label].push({ time: minuteStart, value: price });

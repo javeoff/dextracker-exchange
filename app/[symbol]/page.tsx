@@ -13,13 +13,14 @@ import { WalletModalProvider } from "@/provider/wallet-modal";
 import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { clusterApiUrl } from "@solana/web3.js";
-import { getBigNumber } from "@/lib/utils";
+import { cn, getBigNumber } from "@/lib/utils";
 import { Coin } from "@/lib/types";
 
 export default function Page() {
   const network = WalletAdapterNetwork.Mainnet;
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
   const path = usePathname();
+  const [exchange, setExchange] = useState<string>();
   const [coin, setCoin] = useState<Coin>();
   const { subscribe } = getQuoteSubscription(path.replace("/", ""));
 
@@ -33,6 +34,7 @@ export default function Page() {
       if (!data.price) {
         return;
       }
+      setExchange((prev) => !prev ? data.exchange : prev);
     });
     return () => {
       unsubscribe();
@@ -47,9 +49,14 @@ export default function Page() {
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={[]} autoConnect>
         <WalletModalProvider>
-          <SidebarInset className="overflow-hidden mt-15 md:mt-0">
-            <header className="bg-background sticky top-1 flex h-14 shrink-0 items-center gap-2 border-b">
-              <div className="flex flex-1 items-center h-10 gap-4 px-4">
+          <SidebarInset className="overflow-hidden md:mt-0 mt-15 md:mt-0">
+            <header
+              className={cn(
+                "z-20 flex h-14 shrink-0 items-center gap-2 border-b transition-all duration-200",
+                "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+              )}
+            >
+              <div className="flex flex-1 items-center h-10 mt-1 gap-4 px-4">
                 <div className="flex gap-2 items-center">
                   <div className="px-2">
                     <CoinAvatar address={coin.address} width={32} height={32} />
@@ -77,7 +84,7 @@ export default function Page() {
                     <div className="text-muted-foreground text-xs">
                       Vol:
                     </div>
-                      <div className="font-medium text-sm">${getBigNumber('stats24h' in coin ? (coin.stats24h.buyVolume + coin.stats24h.sellVolume) : (coin as Coin).volume)}</div>
+                    <div className="font-medium text-sm">${getBigNumber('stats24h' in coin ? (coin.stats24h.buyVolume + coin.stats24h.sellVolume) : (coin as Coin).volume)}</div>
                   </div>
                 </div>
               </div>
@@ -85,15 +92,23 @@ export default function Page() {
 
             <div className="flex flex-1 flex-col gap-4 my-1 md:my-o">
               <div className="block lg:hidden px-4">
-                <Swap />
+                <Swap
+                  exchange={exchange}
+                  setExchange={setExchange}
+                />
               </div>
 
-              <CoinChart />
-
+              <CoinChart
+                exchange={exchange}
+                setExchange={setExchange}
+              />
             </div>
           </SidebarInset>
 
-          <SidebarRight />
+          <SidebarRight
+            exchange={exchange}
+            setExchange={setExchange}
+          />
         </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>

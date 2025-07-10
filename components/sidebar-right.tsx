@@ -7,8 +7,13 @@ import {
 import { Swap } from "./swap"
 
 export function SidebarRight({
+  exchange,
+  setExchange,
   ...props
-}: React.ComponentProps<typeof Sidebar>) {
+}: React.ComponentProps<typeof Sidebar> & {
+  exchange: string | undefined;
+  setExchange: React.Dispatch<React.SetStateAction<string | undefined>>;
+}) {
   return (
     <Sidebar
       collapsible="none"
@@ -16,7 +21,7 @@ export function SidebarRight({
       {...props}
     >
     <SidebarContent className="px-2">
-        <Swap />
+        <Swap exchange={exchange} setExchange={setExchange} />
       </SidebarContent>
     </Sidebar>
   )

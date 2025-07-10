@@ -6,29 +6,36 @@ function createSubscription(address: string) {
   const ws = new WebSocket((process.env.DEV_ENDPOINT || 'wss://api.cryptoscan.pro/') + `quote?symbol=${address}`);
   const subscribers = new Set<(data: SubscribeData) => void>();
 
-  let coinsData: SubscribeData | null = null; // Кэш до первого сабскрайба
+  let lastData: SubscribeData | null = null;
 
   ws.onmessage = (msg) => {
     const data = JSON.parse(msg.data);
+    console.log('data1', data)
 
     if ('coins' in data) {
       const coin = (data.coins as Coin[]).sort((a, b) => b.liquidity - a.liquidity)[0];
       console.log('coin', coin);
       localStorage.setItem('symbol', coin.symbol);
       localStorage.setItem('dexAddress', coin.address);
-
-      coinsData = data;
     }
 
-    subscribers.forEach((cb) => cb(data));
+    lastData = data;
+
+    subscribers.forEach((cb) => {
+      try {
+        cb(data)
+      } catch (e) {
+        console.warn(e)
+      }
+    });
   };
 
   return {
     subscribe(cb: (data: SubscribeData) => void) {
       subscribers.add(cb);
 
-      if (coinsData) {
-        cb(coinsData);
+      if (lastData) {
+        cb(lastData);
       }
 
       return () => subscribers.delete(cb);

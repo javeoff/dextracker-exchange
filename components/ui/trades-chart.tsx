@@ -1,6 +1,6 @@
 ﻿"use client"
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CirclePlusIcon, XIcon } from "lucide-react";
 import { BigNumber } from "bignumber.js";
 import { toast } from "sonner";
@@ -42,6 +42,8 @@ export interface SubscribeData {
 }
 
 interface Props {
+  exchange: string | undefined;
+  setExchange: Dispatch<SetStateAction<string | undefined>>;
   symbol: string;
   openPositions: Position[];
   limitOrders: Position[];
@@ -50,15 +52,17 @@ interface Props {
 }
 
 export function TradesChart({
+  exchange,
+  setExchange,
   symbol,
   openPositions = [],
   limitOrders = [],
   subscribe,
   getDepthVolume,
 }: Props) {
+  const [exchanges, setExchanges] = useState(new Set<string>());
   const [initialData, setInitialData] = useState<CandleData[]>([]);
   const availableExchangesRef = useRef<Set<string>>(new Set())
-  const [exchange, setExchange] = useState<string>();
   const [timeframe, setTimeframe] = useState<'1m' | '5m' | '15m' | '1h'>('1m');
   // eslint-disable-next-line 
   const chartRef = useRef<any>(null);
@@ -246,9 +250,11 @@ export function TradesChart({
     subscribe((data: SubscribeData) => {
       if (availableExchangesRef.current) {
         currentPriceRef.current = data.price;
-        availableExchangesRef.current.add(data.exchange);
+        setExchanges((prev) => {
+          prev.add(data.exchange)
+          return prev;
+        })
         if (!exchangeLoaded && data.exchange && !exchange) {
-          setExchange(data.exchange)
           exchangeLoaded = true;
         }
       }
@@ -319,7 +325,7 @@ export function TradesChart({
                 <SelectValue placeholder="Select Exchange" />
               </SelectTrigger>
               <SelectContent>
-                {Array.from(availableExchangesRef.current).map(exchange => (
+                {Array.from(exchanges).map(exchange => (
                   <SelectItem key={exchange} value={exchange} className="text-xs">
                     {exchange}
                   </SelectItem>
