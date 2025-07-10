@@ -31,6 +31,7 @@ export function CoinChart({ exchange, setExchange }: {
         <div className="relative bottom-2">
           <TradesStats
             exchange={exchange}
+            setExchange={setExchange}
             subscribe={subscribe}
           />
         </div>
