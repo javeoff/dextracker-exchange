@@ -44,13 +44,13 @@ const columns: ColumnDef<TrendingItem>[] = [
                 key={idx}
                 className="w-[14px] h-[14px] -ml-2"
               >
-              <Image
-                className="border rounded rounded-full bg-muted"
-                alt={n}
-                src={"/" + getFullNetwork(n) + ".png"}
-                width={14}
-                height={14}
-              />
+                <Image
+                  className="border rounded rounded-full bg-muted"
+                  alt={n}
+                  src={"/" + getFullNetwork(n) + ".png"}
+                  width={14}
+                  height={14}
+                />
               </div>
             ))}
           </div>
@@ -145,14 +145,15 @@ const columns: ColumnDef<TrendingItem>[] = [
           className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
           onClick={() => column.toggleSorting()}
         >
-          {column.getIsSorted() === "asc" && <ArrowUp size={16} />}
-          {column.getIsSorted() === "desc" && <ArrowDown size={16} />}
+          {column.getIsSorted() === "asc" && <ArrowUp className="text-foreground" size={16} />}
+          {column.getIsSorted() === "desc" && <ArrowDown className="text-foreground" size={16} />}
           {!column.getIsSorted() && <ArrowUpDown size={16} />}
         </Button>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="ghost" className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
-              <FilterIcon size={12} />
+            <Button variant="ghost" className="-mx-1 cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
+              {!column.getFilterValue() && <FilterIcon size={11} />}
+              {!!column.getFilterValue() && <FilterIcon className="text-foreground" size={12} />}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-40">
@@ -217,14 +218,15 @@ const columns: ColumnDef<TrendingItem>[] = [
           className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
           onClick={() => column.toggleSorting()}
         >
-          {column.getIsSorted() === "asc" && <ArrowUp size={16} />}
-          {column.getIsSorted() === "desc" && <ArrowDown size={16} />}
+          {column.getIsSorted() === "asc" && <ArrowUp className="text-foreground" size={16} />}
+          {column.getIsSorted() === "desc" && <ArrowDown className="text-foreground" size={16} />}
           {!column.getIsSorted() && <ArrowUpDown size={16} />}
         </Button>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="ghost" className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
-              <FilterIcon size={12} />
+            <Button variant="ghost" className="-mx-1 cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
+              {!column.getFilterValue() && <FilterIcon size={11} />}
+              {!!column.getFilterValue() && <FilterIcon className="text-foreground" size={12} />}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-40">
@@ -290,14 +292,15 @@ const columns: ColumnDef<TrendingItem>[] = [
           className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
           onClick={() => column.toggleSorting()}
         >
-          {column.getIsSorted() === "asc" && <ArrowUp size={16} />}
-          {column.getIsSorted() === "desc" && <ArrowDown size={16} />}
+          {column.getIsSorted() === "asc" && <ArrowUp className="text-foreground" size={16} />}
+          {column.getIsSorted() === "desc" && <ArrowDown className="text-foreground" size={16} />}
           {!column.getIsSorted() && <ArrowUpDown size={16} />}
         </Button>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="ghost" className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
-              <FilterIcon size={12} />
+            <Button variant="ghost" className="-mx-1 cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
+              {!column.getFilterValue() && <FilterIcon size={11} />}
+              {!!column.getFilterValue() && <FilterIcon className="text-foreground" size={12} />}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-40">
@@ -364,14 +367,15 @@ const columns: ColumnDef<TrendingItem>[] = [
           className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
           onClick={() => column.toggleSorting()}
         >
-          {column.getIsSorted() === "asc" && <ArrowUp size={16} />}
-          {column.getIsSorted() === "desc" && <ArrowDown size={16} />}
+          {column.getIsSorted() === "asc" && <ArrowUp className="text-foreground" size={16} />}
+          {column.getIsSorted() === "desc" && <ArrowDown className="text-foreground" size={16} />}
           {!column.getIsSorted() && <ArrowUpDown size={16} />}
         </Button>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="ghost" className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
-              <FilterIcon size={12} />
+            <Button variant="ghost" className="-mx-1 cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
+              {!column.getFilterValue() && <FilterIcon size={11} />}
+              {!!column.getFilterValue() && <FilterIcon className="text-foreground" size={12} />}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-40">
@@ -435,14 +439,15 @@ const columns: ColumnDef<TrendingItem>[] = [
           className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
           onClick={() => column.toggleSorting()}
         >
-          {column.getIsSorted() === "asc" && <ArrowUp size={10} />}
-          {column.getIsSorted() === "desc" && <ArrowDown size={10} />}
+          {column.getIsSorted() === "asc" && <ArrowUp className="text-foreground" size={16} />}
+          {column.getIsSorted() === "desc" && <ArrowDown className="text-foreground" size={16} />}
           {!column.getIsSorted() && <ArrowUpDown size={10} />}
         </Button>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="ghost" className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
-              <FilterIcon size={12} />
+            <Button variant="ghost" className="-mx-1 cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
+              {!column.getFilterValue() && <FilterIcon size={11} />}
+              {!!column.getFilterValue() && <FilterIcon className="text-foreground" size={12} />}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-40">
@@ -506,14 +511,15 @@ const columns: ColumnDef<TrendingItem>[] = [
           className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
           onClick={() => column.toggleSorting()}
         >
-          {column.getIsSorted() === "asc" && <ArrowUp size={10} />}
-          {column.getIsSorted() === "desc" && <ArrowDown size={10} />}
+          {column.getIsSorted() === "asc" && <ArrowUp className="text-foreground" size={16} />}
+          {column.getIsSorted() === "desc" && <ArrowDown className="text-foreground" size={16} />}
           {!column.getIsSorted() && <ArrowUpDown size={10} />}
         </Button>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="ghost" className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
-              <FilterIcon size={12} />
+            <Button variant="ghost" className="-mx-1 cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
+              {!column.getFilterValue() && <FilterIcon size={11} />}
+              {!!column.getFilterValue() && <FilterIcon className="text-foreground" size={12} />}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-40">
@@ -577,14 +583,15 @@ const columns: ColumnDef<TrendingItem>[] = [
           className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
           onClick={() => column.toggleSorting()}
         >
-          {column.getIsSorted() === "asc" && <ArrowUp size={10} />}
-          {column.getIsSorted() === "desc" && <ArrowDown size={10} />}
+          {column.getIsSorted() === "asc" && <ArrowUp className="text-foreground" size={16} />}
+          {column.getIsSorted() === "desc" && <ArrowDown className="text-foreground" size={16} />}
           {!column.getIsSorted() && <ArrowUpDown size={10} />}
         </Button>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="ghost" className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
-              <FilterIcon size={12} />
+            <Button variant="ghost" className="-mx-1 cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
+              {!column.getFilterValue() && <FilterIcon size={11} />}
+              {!!column.getFilterValue() && <FilterIcon className="text-foreground" size={12} />}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-40">
@@ -648,14 +655,15 @@ const columns: ColumnDef<TrendingItem>[] = [
           className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
           onClick={() => column.toggleSorting()}
         >
-          {column.getIsSorted() === "asc" && <ArrowUp size={16} />}
-          {column.getIsSorted() === "desc" && <ArrowDown size={16} />}
+          {column.getIsSorted() === "asc" && <ArrowUp className="text-foreground" size={16} />}
+          {column.getIsSorted() === "desc" && <ArrowDown className="text-foreground" size={16} />}
           {!column.getIsSorted() && <ArrowUpDown size={16} />}
         </Button>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="ghost" className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
-              <FilterIcon size={12} />
+            <Button variant="ghost" className="-mx-1 cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
+              {!column.getFilterValue() && <FilterIcon size={11} />}
+              {!!column.getFilterValue() && <FilterIcon className="text-foreground" size={12} />}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-40">
@@ -720,14 +728,15 @@ const columns: ColumnDef<TrendingItem>[] = [
           className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
           onClick={() => column.toggleSorting()}
         >
-          {column.getIsSorted() === "asc" && <ArrowUp size={16} />}
-          {column.getIsSorted() === "desc" && <ArrowDown size={16} />}
+          {column.getIsSorted() === "asc" && <ArrowUp className="text-foreground" size={16} />}
+          {column.getIsSorted() === "desc" && <ArrowDown className="text-foreground" size={16} />}
           {!column.getIsSorted() && <ArrowUpDown size={16} />}
         </Button>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="ghost" className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
-              <FilterIcon size={12} />
+            <Button variant="ghost" className="-mx-1 cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
+              {!column.getFilterValue() && <FilterIcon size={11} />}
+              {!!column.getFilterValue() && <FilterIcon className="text-foreground" size={12} />}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-40">
@@ -791,14 +800,15 @@ const columns: ColumnDef<TrendingItem>[] = [
           className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
           onClick={() => column.toggleSorting()}
         >
-          {column.getIsSorted() === "asc" && <ArrowUp size={16} />}
-          {column.getIsSorted() === "desc" && <ArrowDown size={16} />}
+          {column.getIsSorted() === "asc" && <ArrowUp className="text-foreground" size={16} />}
+          {column.getIsSorted() === "desc" && <ArrowDown className="text-foreground" size={16} />}
           {!column.getIsSorted() && <ArrowUpDown size={16} />}
         </Button>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="ghost" className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
-              <FilterIcon size={12} />
+            <Button variant="ghost" className="-mx-1 cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
+              {!column.getFilterValue() && <FilterIcon size={11} />}
+              {!!column.getFilterValue() && <FilterIcon className="text-foreground" size={12} />}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-40">
@@ -862,14 +872,15 @@ const columns: ColumnDef<TrendingItem>[] = [
           className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
           onClick={() => column.toggleSorting()}
         >
-          {column.getIsSorted() === "asc" && <ArrowUp size={16} />}
-          {column.getIsSorted() === "desc" && <ArrowDown size={16} />}
+          {column.getIsSorted() === "asc" && <ArrowUp className="text-foreground" size={16} />}
+          {column.getIsSorted() === "desc" && <ArrowDown className="text-foreground" size={16} />}
           {!column.getIsSorted() && <ArrowUpDown size={16} />}
         </Button>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="ghost" className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
-              <FilterIcon size={12} />
+            <Button variant="ghost" className="-mx-1 cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
+              {!column.getFilterValue() && <FilterIcon size={11} />}
+              {!!column.getFilterValue() && <FilterIcon className="text-foreground" size={12} />}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-40">
@@ -968,6 +979,7 @@ export function TrendingTable() {
       columns={columns}
       data={data}
       isLoading={isLoading}
+      storageKey="trending"
     />
   )
 }

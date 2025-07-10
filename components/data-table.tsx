@@ -29,6 +29,7 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   isLoading?: boolean
+  storageKey?: string
 }
 
 const numberRangeFilter: FilterFn<{ min: number; max: number }> = (row, columnId, value) => {
@@ -42,13 +43,37 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   isLoading,
+  storageKey,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const router = useRouter();
+
+  const loadFromStorage = <T,>(key: string, fallback: T): T => {
+    if (typeof window === "undefined" || !storageKey) return fallback;
+    try {
+      const raw = localStorage.getItem(`${storageKey}:${key}`);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch {
+      return fallback;
+    }
+  };
+
+  const [sorting, setSorting] = React.useState<SortingState>(
+    () => loadFromStorage("sorting", [])
+  )
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    () => loadFromStorage("filters", [])
   )
 
-  const router = useRouter();
+  React.useEffect(() => {
+    if (typeof window === "undefined" || !storageKey) return;
+    localStorage.setItem(`${storageKey}:sorting`, JSON.stringify(sorting));
+  }, [sorting, storageKey]);
+
+  React.useEffect(() => {
+    if (typeof window === "undefined" || !storageKey) return;
+    localStorage.setItem(`${storageKey}:filters`, JSON.stringify(columnFilters));
+  }, [columnFilters, storageKey]);
+
   const table = useReactTable({
     data,
     columns,
