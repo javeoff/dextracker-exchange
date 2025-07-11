@@ -51,16 +51,15 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
             return;
          }
 
-         const now = Date.now();
-         const intervalSeconds = 60; // 1m интервал
-         const timeSec = Math.floor(now / 1000);
-         const candleTime = timeSec - (timeSec % intervalSeconds);
+         const now = Math.floor(Date.now() / 1000); // текущее время в секундах
+         const intervalSeconds = 60; // по умолчанию 1m интервал
+         const candleTime = now - (now % intervalSeconds); // начало текущей свечи
 
          const candles = [...dataRef.current];
          const lastCandle = candles[candles.length - 1];
 
          if (lastCandle && lastCandle.time === candleTime) {
-            // обновляем последнюю свечу
+            // Обновляем текущую свечу
             const updatedCandle = {
                ...lastCandle,
                high: Math.max(lastCandle.high, price),
@@ -69,7 +68,7 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
             };
             candles[candles.length - 1] = updatedCandle;
          } else {
-            // добавляем новую свечу
+            // Создаем новую свечу
             candles.push({
                time: candleTime,
                open: price,
@@ -168,7 +167,7 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
          seriesPointsRef.current[label][String(minuteStart)] = price;
 
          // Обновить серию
-         priceSeriesRef.current[label].setData(Object.entries(seriesPointsRef.current[label]).map(([k, v]) => ({ time:Number(k), value: v })) as { time: Time, value: number }[]);
+         priceSeriesRef.current[label].setData(Object.entries(seriesPointsRef.current[label]).map(([k, v]) => ({ time: Number(k), value: v })) as { time: Time, value: number }[]);
       },
 
       reflow: () => {
