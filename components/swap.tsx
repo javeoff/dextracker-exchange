@@ -152,7 +152,7 @@ export function Swap({ exchange, setExchange }: { exchange: string | undefined; 
     return () => {
       clearInterval(interval);
     }
-  }, [publicKey, debouncedFromAmount, fromAddress, setToAmount, exchange, toAddress, query])
+  }, [publicKey, debouncedFromAmount, fromAddress, setToAmount, exchange, toAddress, query, markets])
 
   useEffect(() => {
     if (!publicKey) {

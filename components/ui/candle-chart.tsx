@@ -334,7 +334,6 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
 
       candleSeriesRef.current.setData(dataRef.current as CandlestickData[]);
       volumeSeriesRef.current.setData(volumeData as HistogramData[]);
-      let activeLabel: string | undefined;
       // chartApiRef.current.subscribeCrosshairMove((param) => {
       //    if (!candleSeriesRef.current || !chartRef.current || !param.point) {
       //       return;

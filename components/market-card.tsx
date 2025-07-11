@@ -1,7 +1,7 @@
-import { cn, getBigNumber, getExchangeType, getPrice } from "@/lib/utils"
-import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar"
-import { CoinAvatar } from "./CoinAvatar"
-import { SubscribeData } from "./ui/trades-chart"
+import { cn, getBigNumber, getExchangeType, getPrice } from "@/lib/utils";
+import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
+import { CoinAvatar } from "./CoinAvatar";
+import { SubscribeData } from "./ui/trades-chart";
 import { useEffect, useRef, useState } from "react";
 import { BigNumber } from "bignumber.js";
 import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
@@ -15,10 +15,8 @@ export function MarketCard({
   market,
   exchange,
   setExchange,
-  fromAmount,
   fromAddress,
   fromSymbol,
-  setToAmount,
   markets,
 }: {
   fromAmount: string | undefined;
