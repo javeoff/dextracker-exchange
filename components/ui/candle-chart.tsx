@@ -15,7 +15,7 @@ export type CandleData = {
 };
 
 export const Chart = forwardRef(({ onMove, initialData }: {
-   initialData: CandleData[];
+   initialData?: CandleData[];
    onMove?: (price?: number, y?: number, width?: number) => void;
 }, ref) => {
    const [hoverInfo, setHoverInfo] = useState<{
@@ -25,7 +25,7 @@ export const Chart = forwardRef(({ onMove, initialData }: {
       visible: boolean;
    }>({ visible: false });
    const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null);
-   const dataRef = useRef<CandleData[]>(initialData);
+   const dataRef = useRef<CandleData[]>(initialData || []);
    const priceSeriesRef = useRef<Record<string, ISeriesApi<'Line'>>>({});
    const limitSeriesRef = useRef<Record<string, ISeriesApi<'Line'>>>({});
    const chartRef = useRef<HTMLDivElement>(null);
@@ -36,13 +36,6 @@ export const Chart = forwardRef(({ onMove, initialData }: {
    const lastPriceLabelMap = useRef(new Map<string, string>());
    const lastPriceMap = useRef(new Map<string, string>());
    const { resolvedTheme: theme } = useTheme();
-
-   useEffect(() => {
-      dataRef.current = initialData;
-      if (candleSeriesRef.current) {
-         candleSeriesRef.current.setData(initialData as CandlestickData[]);
-      }
-   }, [initialData]);
 
    useImperativeHandle(ref, () => ({
       addPrice(price: number) {
