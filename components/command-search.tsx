@@ -44,7 +44,6 @@ export function CommandSearch({
       setSearch(val);
     },
     500,
-    { maxWait: 500 },
   );
   const [coins, setCoins] = useState<Coin[]>([]);
 
