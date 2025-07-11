@@ -3,7 +3,7 @@
 import { ActivityIcon, SettingsIcon, SlidersHorizontalIcon, SparklesIcon, WalletIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
-import { ADDRESS_SYMBOLS, getBigNumber, getPrice } from "@/lib/utils";
+import { ADDRESS_SYMBOLS, getBigNumber, getPrice, SYMBOL_ADDRESSES } from "@/lib/utils";
 import { ChangeIcon } from "./ui/change-icon";
 import { useState, useEffect, useMemo, Suspense, Dispatch, SetStateAction } from "react";
 import { getQuoteSubscription } from "@/lib/getQuoteSubscription";
@@ -102,20 +102,15 @@ export function Swap({ exchange, setExchange }: { exchange: string | undefined; 
     if (!fromAmount || !exchange || !markets[exchange]) {
       return;
     }
-    setToAmount(new BigNumber(fromAmount).div(markets[exchange].price).toFixed())
-  }, [markets, exchange, fromAmount])
-
-  useEffect(() => {
-    if (!exchange || !markets[exchange] || !fromAmount || !exchange) {
-      return
+    if (fromAddress !== SYMBOL_ADDRESSES.USDC && fromAddress !== SYMBOL_ADDRESSES.USDT) {
+      return;
     }
     setToAmount(new BigNumber(fromAmount).div(markets[exchange].price).toFixed())
-  }, [markets, exchange, setToAmount, fromAmount])
-
-  console.log('toAddress', toAddress, balances)
+  }, [markets, exchange, fromAmount, fromAddress])
 
   useEffect(() => {
-    if (exchange) {
+    if (exchange && !markets[exchange].address) {
+      setSwapTxn(undefined);
       return
     }
     if (!debouncedFromAmount) {
@@ -427,7 +422,8 @@ export function Swap({ exchange, setExchange }: { exchange: string | undefined; 
               disabled={!swapTxn}
               onClick={handleTradeClick}
             >
-              Trade
+              {(!exchange || markets[exchange]?.address) && 'Trade'}
+              {exchange && !markets[exchange]?.address && 'CEX will released soon'}
             </Button>
           </div>
         </div>

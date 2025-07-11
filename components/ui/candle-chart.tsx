@@ -335,32 +335,32 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
       candleSeriesRef.current.setData(dataRef.current as CandlestickData[]);
       volumeSeriesRef.current.setData(volumeData as HistogramData[]);
       let activeLabel: string | undefined;
-      chartApiRef.current.subscribeCrosshairMove((param) => {
-         if (!candleSeriesRef.current || !chartRef.current || !param.point) {
-            return;
-         }
-         const y = param.point.y;
-         const price = candleSeriesRef.current.coordinateToPrice(y);
-         const label = lastPriceMap.current.get(getPrice(price as number))
-         if (label) {
-            activeLabel = label;
-            priceSeriesRef.current[label].applyOptions({
-               lineWidth: 2,
-               lineStyle: LineStyle.Solid,
-               color: getExchangeColor(label),
-               priceLineVisible: true,
-               crosshairMarkerVisible: true,
-            });
-         }
-         if (!label && !!activeLabel) {
-            priceSeriesRef.current[activeLabel].applyOptions({
-               lineWidth: 1,
-               color: getExchangeColor(activeLabel),
-               priceLineVisible: false,
-               crosshairMarkerVisible: true,
-            });
-         }
-      })
+      // chartApiRef.current.subscribeCrosshairMove((param) => {
+      //    if (!candleSeriesRef.current || !chartRef.current || !param.point) {
+      //       return;
+      //    }
+      //    const y = param.point.y;
+      //    const price = candleSeriesRef.current.coordinateToPrice(y);
+      //    const label = lastPriceMap.current.get(getPrice(price as number))
+      //    if (label) {
+      //       activeLabel = label;
+      //       priceSeriesRef.current[label].applyOptions({
+      //          lineWidth: 2,
+      //          lineStyle: LineStyle.Solid,
+      //          color: getExchangeColor(label),
+      //          priceLineVisible: true,
+      //          crosshairMarkerVisible: true,
+      //       });
+      //    }
+      //    if (!label && !!activeLabel) {
+      //       priceSeriesRef.current[activeLabel].applyOptions({
+      //          lineWidth: 1,
+      //          color: getExchangeColor(activeLabel),
+      //          priceLineVisible: false,
+      //          crosshairMarkerVisible: true,
+      //       });
+      //    }
+      // })
 
       chartApiRef.current.subscribeCrosshairMove((param) => {
          if (!candleSeriesRef.current || !chartRef.current) {

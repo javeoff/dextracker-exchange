@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import { SidebarRight } from "@/components/sidebar-right";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { getQuoteSubscription } from "@/lib/getQuoteSubscription";
 import { Swap } from "@/components/swap";
 import { CoinAvatar } from "@/components/CoinAvatar";
@@ -23,6 +23,7 @@ export default function Page() {
   const [exchange, setExchange] = useState<string>();
   const [coin, setCoin] = useState<Coin>();
   const { subscribe } = getQuoteSubscription(path.replace("/", ""));
+  const firstExchangeLoaded = useRef(false);
 
   useEffect(() => {
     const unsubscribe = subscribe((data) => {
@@ -34,7 +35,10 @@ export default function Page() {
       if (!data.price) {
         return;
       }
-      setExchange((prev) => !prev ? data.exchange : prev);
+      if (data.address && !firstExchangeLoaded.current) {
+        setExchange((prev) => !prev ? data.exchange : prev);
+        firstExchangeLoaded.current = true;
+      }
     });
     return () => {
       unsubscribe();

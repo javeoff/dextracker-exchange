@@ -1,4 +1,4 @@
-import { cn, getBigNumber, getPrice } from "@/lib/utils"
+import { cn, getBigNumber, getExchangeType, getPrice } from "@/lib/utils"
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar"
 import { CoinAvatar } from "./CoinAvatar"
 import { SubscribeData } from "./ui/trades-chart"
@@ -30,6 +30,7 @@ export function MarketCard({
   fromSymbol: string | undefined;
   setExchange: React.Dispatch<React.SetStateAction<string | undefined>>;
 }) {
+  const exchangeType = getExchangeType(market.exchange);
   const exchangePrice = exchange ? markets[exchange]?.price : undefined;
   const minPrice = exchangePrice ? Math.min(market.price, exchangePrice) : undefined;
   const maxPrice = exchangePrice ? Math.max(market.price, exchangePrice) : undefined;
@@ -84,9 +85,6 @@ export function MarketCard({
       }
       onClick={() => {
         setExchange(market.exchange !== exchange ? market.exchange : undefined)
-        if (fromAmount && exchange) {
-          setToAmount(new BigNumber(fromAmount).div(markets[market.exchange]?.price).toFixed())
-        }
       }}
     >
       <div className="flex flex-col gap-1">
@@ -140,7 +138,15 @@ export function MarketCard({
       </div>
       <div className="flex flex-col gap-1 items-end">
         <div className="overflow-x-scroll no-scrollbar whitespace-nowrap flex items-center gap-1 bg-background rounded-lg border text-[11px] w-max px-2 py-[1px] font-semibold text-foreground/80 relative left-2">
-          <div className="rounded-full w-3 h-3">
+          {exchangeType === 'sol' && (
+            <div className="rounded-full w-3 h-3 -mr-2">
+              <Avatar>
+                <AvatarImage src={`/solana.png`} />
+                <AvatarFallback>SO</AvatarFallback>
+              </Avatar>
+            </div>
+          )}
+          <div className="rounded-full w-3 h-3 bg-background">
             <Avatar>
               <AvatarImage src={`/${market.exchange}.png`} />
               <AvatarFallback>{market.exchange.slice(0, 2)}</AvatarFallback>

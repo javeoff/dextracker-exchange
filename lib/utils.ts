@@ -9,7 +9,14 @@ export function cn(...inputs: ClassValue[]) {
 
 export const ADDRESS_SYMBOLS: Record<string, string> = {
   ['EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v']: 'USDC',
+  ['Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB']: 'USDT',
   ['So11111111111111111111111111111111111111112']: 'SOL',
+}
+
+export const SYMBOL_ADDRESSES: Record<string, string> = {
+  USDC: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+  USDT: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+  SOL: 'So11111111111111111111111111111111111111112',
 }
 
 export const getExchangeName = (e: string) => {
@@ -18,6 +25,18 @@ export const getExchangeName = (e: string) => {
       return 'gate'
     default:
       return e.toLowerCase();
+  }
+}
+
+export const getExchangeType = (e: string) => {
+  switch (e.toLowerCase()) {
+    case 'ray_clmm':
+    case 'ray_v2':
+    case 'ray_v4':
+    case 'meteora_dlmm':
+      return 'sol'
+    default:
+      return 'cex';
   }
 }
 
