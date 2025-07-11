@@ -37,7 +37,12 @@ export function Header() {
       <div className="flex flex-col px-4 py-2 space-y-3 md:hidden">
         <div className="flex justify-between items-center">
           <Link href="https://cryptoscan.pro" className="block">
-            <Image src={theme === 'dark' ? "/logo.png" : "/logo-white.png"} alt="logo" width={35} height={12} />
+            {theme === 'dark' && (
+              <Image src={"/logo.png"} alt="logo" width={35} height={12} />
+            )}
+            {theme !== 'dark' && (
+              <Image src={"/logo-white.png"} alt="logo" width={35} height={12} />
+            )}
           </Link>
 
           <NavigationMenu>

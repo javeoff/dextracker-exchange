@@ -33,7 +33,7 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
    const chartApiRef = useRef<IChartApi | null>(null);
    const candleSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
    const previousRangeRef = useRef({ from: 0, to: 0 });
-   const seriesPointsRef = useRef<Record<string, Record<number, number>>>({});
+   const seriesPointsRef = useRef<Record<string, Record<string, number>>>({});
    const lastPriceLabelMap = useRef(new Map<string, string>());
    const lastPriceMap = useRef(new Map<string, string>());
    const { resolvedTheme: theme } = useTheme();
@@ -163,12 +163,12 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
          if (!seriesPointsRef.current[label]) seriesPointsRef.current[label] = {};
 
 
-         delete seriesPointsRef.current[label][minuteStart]
+         delete seriesPointsRef.current[label][String(minuteStart)]
          // Добавить новую точку
-         seriesPointsRef.current[label][minuteStart] = price;
+         seriesPointsRef.current[label][String(minuteStart)] = price;
 
          // Обновить серию
-         priceSeriesRef.current[label].setData(Object.entries(seriesPointsRef.current[label]).map(([k, v]) => ({ time:k, value: v })) as { time: Time, value: number }[]);
+         priceSeriesRef.current[label].setData(Object.entries(seriesPointsRef.current[label]).map(([k, v]) => ({ time:Number(k), value: v })) as { time: Time, value: number }[]);
       },
 
       reflow: () => {

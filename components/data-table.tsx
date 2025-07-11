@@ -1,25 +1,25 @@
 "use client"
 
 import {
-  ColumnDef,
-  ColumnFiltersState,
-  FilterFn,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  SortingState,
-  useReactTable,
+    ColumnDef,
+    ColumnFiltersState,
+    FilterFn,
+    flexRender,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getSortedRowModel,
+    SortingState,
+    useReactTable,
 } from "@tanstack/react-table"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table"
 import React from "react"
 import { Skeleton } from "./ui/skeleton"
@@ -45,7 +45,6 @@ export function DataTable<TData, TValue>({
   isLoading,
   storageKey,
 }: DataTableProps<TData, TValue>) {
-  const query = useSearchParams()
   const router = useRouter();
 
   const loadFromStorage = <T,>(key: string, fallback: T): T => {
@@ -141,7 +140,7 @@ export function DataTable<TData, TValue>({
                 className="group hover:cursor-pointer"
                 data-state={row.getIsSelected() && "selected"}
                 onClick={() =>
-                  router.push(`/${(row.original as { address: string }).address}?ref=${query.get('ref')}`)
+                  router.push(`/${(row.original as { address: string }).address}?ref=${new URLSearchParams(window.location.search).get('ref')}`)
                 }
               >
                 {row.getVisibleCells().map((cell, colIndex) => {

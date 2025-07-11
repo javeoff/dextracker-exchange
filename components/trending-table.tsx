@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { useState, useEffect, useMemo, useRef, Suspense } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { DataTable } from "./data-table";
 import { cn, getAgo, getBigNumber, getFullNetwork, getPrice } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -10,7 +10,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { CoinAvatar } from "./CoinAvatar";
 import { TooltipTrigger, TooltipContent, Tooltip } from "./ui/tooltip";
-import Image from "next/image"
+import Image from "next/image";
 
 interface TrendingItem {
   symbol: string;
@@ -928,13 +928,11 @@ export function TrendingTable() {
   }, [setTrending, setIsLoading])
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <DataTable
-        columns={columns}
-        data={data}
-        isLoading={isLoading}
-        storageKey="trending"
-      />
-    </Suspense>
+    <DataTable
+      columns={columns}
+      data={data}
+      isLoading={isLoading}
+      storageKey="trending"
+    />
   )
 }

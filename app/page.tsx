@@ -1,3 +1,4 @@
+"use client"
 import { TrendingTable } from "@/components/trending-table";
 
 export default function Home() {
