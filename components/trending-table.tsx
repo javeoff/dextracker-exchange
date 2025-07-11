@@ -161,9 +161,9 @@ const columns: ColumnDef<TrendingItem>[] = [
                 <TooltipTrigger asChild>
                   <span className={cn(
                     "text-[10px] px-1 py-0 bg-input/20 rounded rounded-sm border border-input/40",
-                    row.original.net > 0 ? "text-green-800 bg-green-200/70 dark:text-green-300 dark:bg-green-800/10" : "text-red-800 bg-red-200/70 dark:text-red-300 dark:bg-red-800/10"
+                    row.original.buys-row.original.sells > 0 ? "text-green-800 bg-green-200/70 dark:text-green-300 dark:bg-green-800/10" : "text-red-800 bg-red-200/70 dark:text-red-300 dark:bg-red-800/10"
                   )}>
-                    ${getBigNumber(row.original.net)}
+                    ${getBigNumber(row.original.buys-row.original.sells)}
                   </span>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
