@@ -244,6 +244,12 @@ export function TradesTable({ subscribe }: Props) {
 
   useEffect(() => {
     subscribe((d) => {
+      if ('transactions' in d) {
+        setData((prev) => [...d.transactions.map((item) => ({
+          createdAt: new Date(item.boughtAt),
+          ...item,
+        })), ...prev,])
+      }
       if (d.price === undefined) return;
 
       setData((prev) => {

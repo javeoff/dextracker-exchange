@@ -35,7 +35,7 @@ export default function Page() {
       if (!data.price) {
         return;
       }
-      if (data.address && !firstExchangeLoaded.current) {
+      if (!data.boughtAt && data.address && !firstExchangeLoaded.current) {
         setExchange((prev) => !prev ? data.exchange : prev);
         firstExchangeLoaded.current = true;
       }

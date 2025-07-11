@@ -26,6 +26,8 @@ interface Position {
 }
 
 export interface SubscribeData {
+  id: string;
+  transactions: SubscribeData[];
   symbol: string;
   exchange: string;
   price: number;
