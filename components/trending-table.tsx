@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useLayoutEffect } from "react";
 import { DataTable } from "./data-table";
 import { cn, getAgo, getBigNumber, getFullNetwork, getPrice } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -18,7 +18,6 @@ interface TrendingItem {
   networks: string[];
   liquidity: number;
   volume: number;
-  spread: number;
   address: string;
   rug_ratio: number;
   pool_creation_timestamp: string;
@@ -161,9 +160,9 @@ const columns: ColumnDef<TrendingItem>[] = [
                 <TooltipTrigger asChild>
                   <span className={cn(
                     "text-[10px] px-1 py-0 bg-input/20 rounded rounded-sm border border-input/40",
-                    row.original.buys-row.original.sells > 0 ? "text-green-800 bg-green-200/70 dark:text-green-300 dark:bg-green-800/10" : "text-red-800 bg-red-200/70 dark:text-red-300 dark:bg-red-800/10"
+                    row.original.buys - row.original.sells > 0 ? "text-green-800 bg-green-200/70 dark:text-green-300 dark:bg-green-800/10" : "text-red-800 bg-red-200/70 dark:text-red-300 dark:bg-red-800/10"
                   )}>
-                    ${getBigNumber(row.original.buys-row.original.sells)}
+                    ${getBigNumber(row.original.buys - row.original.sells)}
                   </span>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
@@ -883,17 +882,39 @@ const columns: ColumnDef<TrendingItem>[] = [
 ]
 
 export function TrendingTable() {
-  const [trending, setTrending] = useState<Record<string, TrendingItem>>({});
-  const data = useMemo(() => Object.values(trending), [trending])
+  const [trending, setTrending] = useState<TrendingItem[]>([]);
   const tableRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const scrollTop = useRef(0);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (tableRef.current) {
       scrollTop.current = tableRef.current.scrollTop;
     }
     setIsLoading(true);
+    const load = async () => {
+      const res = await fetch('https://api.cryptoscan.pro/trending/list');
+      const data = await res.json();
+      const items = Object.values(data) as TrendingItem[];
+      console.log('trending loaded')
+      // eslint-disable-next-line
+      setTrending(items.map((t: any) => {
+        return {
+          ...t,
+          liquidity: Number(t.liquidity),
+          volume24: Number(t.volume24),
+          volume: Number(t.volume),
+          buys: Number(t.buys),
+          sells: Number(t.sells),
+          net: Number(t.net),
+          txs: Number(t.txs),
+          price_change_percent1m: Number(t.price_change_percent1m),
+          price_change_percent5m: Number(t.price_change_percent5m),
+          price_change_percent1h: Number(t.price_change_percent1h),
+        }
+      }))
+    }
+    load();
     const ws = new WebSocket((process.env.DEV_ENDPOINT || 'wss://api.cryptoscan.pro/') + 'trending')
     ws.onmessage = (msg) => {
       const trendingItems = JSON.parse(msg.data)
@@ -910,7 +931,6 @@ export function TrendingTable() {
           sells: Number(t.sells),
           net: Number(t.net),
           txs: Number(t.txs),
-          spread: Number(t.spread || 0),
           price_change_percent1m: Number(t.price_change_percent1m),
           price_change_percent5m: Number(t.price_change_percent5m),
           price_change_percent1h: Number(t.price_change_percent1h),
@@ -925,12 +945,12 @@ export function TrendingTable() {
     return () => {
       ws.close()
     }
-  }, [setTrending, setIsLoading])
+  }, [])
 
   return (
     <DataTable
       columns={columns}
-      data={data}
+      data={trending}
       isLoading={isLoading}
       storageKey="trending"
     />
