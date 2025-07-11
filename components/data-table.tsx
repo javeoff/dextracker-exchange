@@ -11,7 +11,7 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 
 import {
   Table,
@@ -45,6 +45,7 @@ export function DataTable<TData, TValue>({
   isLoading,
   storageKey,
 }: DataTableProps<TData, TValue>) {
+  const query = useSearchParams()
   const router = useRouter();
 
   const loadFromStorage = <T,>(key: string, fallback: T): T => {
@@ -140,7 +141,7 @@ export function DataTable<TData, TValue>({
                 className="group hover:cursor-pointer"
                 data-state={row.getIsSelected() && "selected"}
                 onClick={() =>
-                  router.push(`/${(row.original as { address: string }).address}`)
+                  router.push(`/${(row.original as { address: string }).address}?ref=${query.get('ref')}`)
                 }
               >
                 {row.getVisibleCells().map((cell, colIndex) => {

@@ -1,11 +1,11 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, Suspense } from "react";
 import { DataTable } from "./data-table";
 import { cn, getAgo, getBigNumber, getFullNetwork, getPrice } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { ArrowDown, ArrowUp, ArrowUpDown, FilterIcon } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, BotIcon, BrainIcon, CrosshairIcon, FilterIcon, UserIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { CoinAvatar } from "./CoinAvatar";
@@ -22,6 +22,13 @@ interface TrendingItem {
   address: string;
   rug_ratio: number;
   pool_creation_timestamp: string;
+  buys: number;
+  sells: number;
+  net: number;
+  top_10_holder_rate: number;
+  sniper_count: number;
+  holder_count: number;
+  smart_degen_count: number;
 }
 
 const columns: ColumnDef<TrendingItem>[] = [
@@ -78,12 +85,92 @@ const columns: ColumnDef<TrendingItem>[] = [
                   </div>
                 )}
               </div>
+              {!!row.original.address && (
+                <div className="text-[10px] text-muted-foreground">
+                  {row.original.address.slice(0, 5)}...{row.original.address.slice(-3)}
+                </div>
+              )}
             </span>
-            {!!row.original.address && (
-              <div className="text-[10px] text-muted-foreground">
-                {row.original.address.slice(0, 5)}...{row.original.address.slice(-3)}
-              </div>
-            )}
+            <div className="flex gap-1 mt-[2px]">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className={cn(
+                    "text-[10px] px-1 py-0 bg-input/20 rounded rounded-sm border border-input/40 flex items-center gap-[2px]",
+                    row.original.rug_ratio < 0.2 ? "text-green-800 bg-green-200/70 dark:text-green-300 dark:bg-green-800/10" : "text-red-800 bg-red-200/70 dark:text-red-300 dark:bg-red-800/10"
+                  )}>
+                    <div className="w-[12px] h-[12px]">
+                      <BotIcon className="w-[12px] h-[12px]" />
+                    </div>
+                    {(row.original.rug_ratio * 100).toFixed()}%
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p>Rug pull % chance</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className={cn(
+                    "text-[10px] px-1 py-0 bg-input/20 rounded rounded-sm border border-input/40 flex items-center gap-[2px]",
+                    row.original.top_10_holder_rate < 0.2 ? "text-green-800 bg-green-200/70 dark:text-green-300 dark:bg-green-800/10" : "text-red-800 bg-red-200/70 dark:text-red-300 dark:bg-red-800/10"
+                  )}>
+                    <div className="w-[12px] h-[12px]">
+                      <UserIcon className="w-[12px] h-[12px]" />
+                    </div>
+                    {(row.original.top_10_holder_rate * 100).toFixed()}%
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p>Top 10 holders %</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className={cn(
+                    "text-[10px] px-1 py-0 bg-input/20 rounded rounded-sm border border-input/40 flex items-center gap-[2px]",
+                    row.original.sniper_count / row.original.holder_count < 0.2 ? "text-green-800 bg-green-200/70 dark:text-green-300 dark:bg-green-800/10" : "text-red-800 bg-red-200/70 dark:text-red-300 dark:bg-red-800/10"
+                  )}>
+                    <div className="w-[12px] h-[12px]">
+                      <CrosshairIcon className="w-[12px] h-[12px]" />
+                    </div>
+                    {(row.original.sniper_count / row.original.holder_count * 100).toFixed()}%
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p>Snipers % ratio</p>
+                </TooltipContent>
+              </Tooltip>
+              {row.original.smart_degen_count / row.original.holder_count * 100 > 0.1 && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className={cn(
+                      "text-[10px] px-1 py-0 bg-input/20 rounded rounded-sm border border-input/40 flex items-center gap-[2px] text-foreground/60",
+                    )}>
+                      <div className="w-[12px] h-[12px]">
+                        <BrainIcon className="w-[12px] h-[12px] text-pink-300" />
+                      </div>
+                      {(row.original.smart_degen_count / row.original.holder_count * 100).toFixed(1)}%
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    <p>Smart wallets % ratio</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className={cn(
+                    "text-[10px] px-1 py-0 bg-input/20 rounded rounded-sm border border-input/40",
+                    row.original.net > 0 ? "text-green-800 bg-green-200/70 dark:text-green-300 dark:bg-green-800/10" : "text-red-800 bg-red-200/70 dark:text-red-300 dark:bg-red-800/10"
+                  )}>
+                    ${getBigNumber(row.original.net)}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p>Difference between buys and sells in USD</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
           </div >
         </div >
       )
@@ -418,226 +505,19 @@ const columns: ColumnDef<TrendingItem>[] = [
         (filterValue.max ? Number(value) <= filterValue.max : true);
     },
     cell: ({ row }) => {
-      const buys = row.getValue("buys") as number;
-      const sells = row.getValue("sells") as number;
-      return <div>${getBigNumber(buys + sells)}</div>;
+      const buys = row.original.buys as number;
+      const sells = row.original.sells as number;
+      return <div>
+        <div>
+          ${getBigNumber(buys + sells)}
+        </div>
+        <div className="flex">
+          <span className="text-green-600 dark:text-green-300 text-xs">${getBigNumber(row.original.buys)}</span>
+          <span className="text-xs text-muted-foreground">/</span>
+          <span className="text-red-600 dark:text-red-300 text-xs">${getBigNumber(row.original.sells)}</span>
+        </div>
+      </div>;
     },
-  },
-  {
-    accessorKey: "net",
-    header: ({ column }) => (
-      <div className="relative flex items-center">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div>Net</div>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">
-            <p>USD difference between sells and buys in 1 minute</p>
-          </TooltipContent>
-        </Tooltip>
-        <Button
-          variant="ghost"
-          className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
-          onClick={() => column.toggleSorting()}
-        >
-          {column.getIsSorted() === "asc" && <ArrowUp className="text-foreground" size={16} />}
-          {column.getIsSorted() === "desc" && <ArrowDown className="text-foreground" size={16} />}
-          {!column.getIsSorted() && <ArrowUpDown size={16} />}
-        </Button>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="ghost" className="-mx-1 cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
-              {!column.getFilterValue() && <FilterIcon size={11} />}
-              {!!column.getFilterValue() && <FilterIcon className="text-foreground" size={12} />}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-40">
-            <div className="flex flex-col gap-2">
-              <Input
-                type="number"
-                placeholder="Min"
-                className="border rounded px-2 py-1"
-                value={(column.getFilterValue() as { min: number; max: number })?.min}
-                onChange={(e) => {
-                  const prev = (column.getFilterValue() as { min: number; max: number }) || {};
-                  column.setFilterValue({
-                    ...prev,
-                    min: e.target.value ? Number(e.target.value) : undefined,
-                  });
-                }}
-              />
-              <Input
-                type="number"
-                placeholder="Max"
-                className="border rounded px-2 py-1"
-                value={(column.getFilterValue() as { min: number; max: number })?.max}
-                onChange={(e) => {
-                  const prev = (column.getFilterValue() as { min: number; max: number }) || {};
-                  column.setFilterValue({
-                    ...prev,
-                    max: e.target.value ? Number(e.target.value) : undefined,
-                  });
-                }}
-              />
-            </div>
-          </PopoverContent>
-        </Popover>
-      </div >
-    ),
-    sortDescFirst: true,
-    cell: ({ row }) => {
-      const net = row.getValue("net") as number;
-
-      return (
-        <div className={`flex items-center gap-1 ${net > 0 ? 'text-green-600 dark:text-green-200' : 'text-red-600 dark:text-red-200'}`}>
-          ${getBigNumber(net)}
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: "buys",
-    header: ({ column }) => (
-      <div className="relative flex items-center">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div>Buys</div>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">
-            <p>USD buys in 1 minute</p>
-          </TooltipContent>
-        </Tooltip>
-        <Button
-          variant="ghost"
-          className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
-          onClick={() => column.toggleSorting()}
-        >
-          {column.getIsSorted() === "asc" && <ArrowUp className="text-foreground" size={16} />}
-          {column.getIsSorted() === "desc" && <ArrowDown className="text-foreground" size={16} />}
-          {!column.getIsSorted() && <ArrowUpDown size={10} />}
-        </Button>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="ghost" className="-mx-1 cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
-              {!column.getFilterValue() && <FilterIcon size={11} />}
-              {!!column.getFilterValue() && <FilterIcon className="text-foreground" size={12} />}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-40">
-            <div className="flex flex-col gap-2">
-              <Input
-                type="number"
-                placeholder="Min"
-                className="border rounded px-2 py-1"
-                value={(column.getFilterValue() as { min: number; max: number })?.min}
-                onChange={(e) => {
-                  const prev = (column.getFilterValue() as { min: number; max: number }) || {};
-                  column.setFilterValue({
-                    ...prev,
-                    min: e.target.value ? Number(e.target.value) : undefined,
-                  });
-                }}
-              />
-              <Input
-                type="number"
-                placeholder="Max"
-                className="border rounded px-2 py-1"
-                value={(column.getFilterValue() as { min: number; max: number })?.max}
-                onChange={(e) => {
-                  const prev = (column.getFilterValue() as { min: number; max: number }) || {};
-                  column.setFilterValue({
-                    ...prev,
-                    max: e.target.value ? Number(e.target.value) : undefined,
-                  });
-                }}
-              />
-            </div>
-          </PopoverContent>
-        </Popover>
-      </div >
-    ),
-    sortDescFirst: true,
-    cell: ({ row }) => {
-      const buys = row.getValue("buys") as number;
-
-      return (
-        <div className="font-semibold">
-          ${getBigNumber(buys)}
-        </div>
-      )
-    }
-  },
-  {
-    accessorKey: "sells",
-    header: ({ column }) => (
-      <div className="relative flex items-center">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div>Sells</div>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">
-            <p>USD sells in 1 minute</p>
-          </TooltipContent>
-        </Tooltip>
-        <Button
-          variant="ghost"
-          className="cursor-pointer h-6 w-6 text-muted-foreground hover:text-white"
-          onClick={() => column.toggleSorting()}
-        >
-          {column.getIsSorted() === "asc" && <ArrowUp className="text-foreground" size={16} />}
-          {column.getIsSorted() === "desc" && <ArrowDown className="text-foreground" size={16} />}
-          {!column.getIsSorted() && <ArrowUpDown size={10} />}
-        </Button>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="ghost" className="-mx-1 cursor-pointer h-6 w-6 text-muted-foreground hover:text-white">
-              {!column.getFilterValue() && <FilterIcon size={11} />}
-              {!!column.getFilterValue() && <FilterIcon className="text-foreground" size={12} />}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-40">
-            <div className="flex flex-col gap-2">
-              <Input
-                type="number"
-                placeholder="Min"
-                className="border rounded px-2 py-1"
-                value={(column.getFilterValue() as { min: number; max: number })?.min}
-                onChange={(e) => {
-                  const prev = (column.getFilterValue() as { min: number; max: number }) || {};
-                  column.setFilterValue({
-                    ...prev,
-                    min: e.target.value ? Number(e.target.value) : undefined,
-                  });
-                }}
-              />
-              <Input
-                type="number"
-                placeholder="Max"
-                className="border rounded px-2 py-1"
-                value={(column.getFilterValue() as { min: number; max: number })?.max}
-                onChange={(e) => {
-                  const prev = (column.getFilterValue() as { min: number; max: number }) || {};
-                  column.setFilterValue({
-                    ...prev,
-                    max: e.target.value ? Number(e.target.value) : undefined,
-                  });
-                }}
-              />
-            </div>
-          </PopoverContent>
-        </Popover>
-      </div >
-    ),
-    sortDescFirst: true,
-    cell: ({ row }) => {
-      const sells = row.getValue("sells") as number;
-
-      return (
-        <div className="font-semibold">
-          ${getBigNumber(sells)}
-        </div>
-      )
-    }
   },
   {
     accessorKey: "swaps",
@@ -712,15 +592,15 @@ const columns: ColumnDef<TrendingItem>[] = [
     }
   },
   {
-    accessorKey: "spread",
+    accessorKey: "holder_count",
     header: ({ column }) => (
       <div className="relative flex items-center">
         <Tooltip>
           <TooltipTrigger asChild>
-            <div>%</div>
+            <div>Hds</div>
           </TooltipTrigger>
           <TooltipContent side="bottom">
-            <p>Price difference between DEX and CEX exchanges</p>
+            <p>Amount of holders in the coin</p>
           </TooltipContent>
         </Tooltip>
         <Button
@@ -775,9 +655,9 @@ const columns: ColumnDef<TrendingItem>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex gap-4 items-center">
-          {row.getValue("spread") !== undefined && (
+          {row.getValue("holder_count") !== undefined && (
             <div className="flex flex-col">
-              {(row.getValue("spread") as number).toFixed(1)}%
+              {getBigNumber((row.getValue("holder_count") as number))}
             </div>
           )}
         </div>
@@ -1048,11 +928,13 @@ export function TrendingTable() {
   }, [setTrending, setIsLoading])
 
   return (
-    <DataTable
-      columns={columns}
-      data={data}
-      isLoading={isLoading}
-      storageKey="trending"
-    />
+    <Suspense fallback={<div>Loading...</div>}>
+      <DataTable
+        columns={columns}
+        data={data}
+        isLoading={isLoading}
+        storageKey="trending"
+      />
+    </Suspense>
   )
 }

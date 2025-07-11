@@ -152,7 +152,8 @@ export function Swap({ exchange, setExchange }: { exchange: string | undefined; 
     return () => {
       clearInterval(interval);
     }
-  }, [publicKey, debouncedFromAmount, fromAddress, setToAmount, exchange, toAddress, query, markets])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [publicKey, debouncedFromAmount, fromAddress, setToAmount, exchange, toAddress, query])
 
   useEffect(() => {
     if (!publicKey) {

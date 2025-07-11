@@ -33,7 +33,7 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
    const chartApiRef = useRef<IChartApi | null>(null);
    const candleSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
    const previousRangeRef = useRef({ from: 0, to: 0 });
-   const seriesPointsRef = useRef<Record<string, { time: number; value: number }[]>>({});
+   const seriesPointsRef = useRef<Record<string, Record<number, number>>>({});
    const lastPriceLabelMap = useRef(new Map<string, string>());
    const lastPriceMap = useRef(new Map<string, string>());
    const { resolvedTheme: theme } = useTheme();
@@ -160,17 +160,15 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
 
          // Инициализация массива точек
          if (!seriesPointsRef.current) seriesPointsRef.current = {};
-         if (!seriesPointsRef.current[label]) seriesPointsRef.current[label] = [];
+         if (!seriesPointsRef.current[label]) seriesPointsRef.current[label] = {};
 
-         if (seriesPointsRef.current[label].some((v) => v.time === minuteStart)) {
-            return;
-         }
 
+         delete seriesPointsRef.current[label][minuteStart]
          // Добавить новую точку
-         seriesPointsRef.current[label].push({ time: minuteStart, value: price });
+         seriesPointsRef.current[label][minuteStart] = price;
 
          // Обновить серию
-         priceSeriesRef.current[label].setData(seriesPointsRef.current[label] as { time: Time, value: number }[]);
+         priceSeriesRef.current[label].setData(Object.entries(seriesPointsRef.current[label]).map(([k, v]) => ({ time:k, value: v })) as { time: Time, value: number }[]);
       },
 
       reflow: () => {
