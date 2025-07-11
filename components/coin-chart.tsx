@@ -1,20 +1,16 @@
 "use client"
 
-import { usePathname } from 'next/navigation';
 import { TradesChart } from './ui/trades-chart';
 import { TradesStats } from './trades-stats';
 import { TradesTable } from './trades-table';
 import { getQuoteSubscription } from '@/lib/getQuoteSubscription';
 import { Dispatch, SetStateAction } from 'react';
 
-
 export function CoinChart({ exchange, setExchange }: {
   exchange: string | undefined
   setExchange: Dispatch<SetStateAction<string | undefined>>
 }) {
-  const symbol = usePathname();
-
-  const { subscribe } = getQuoteSubscription(symbol.replace('/', '') as string)
+  const { subscribe } = getQuoteSubscription()
 
   return (
     <>
@@ -22,7 +18,7 @@ export function CoinChart({ exchange, setExchange }: {
         <TradesChart
           exchange={exchange}
           setExchange={setExchange}
-          symbol={symbol.replace('/', '') as string || 'BTC'}
+          symbol={window.location.pathname.replace('/', '') as string || 'BTC'}
           openPositions={[]}
           limitOrders={[]}
           subscribe={subscribe}

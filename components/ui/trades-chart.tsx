@@ -1,6 +1,6 @@
 ﻿"use client"
 
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { CirclePlusIcon, XIcon } from "lucide-react";
 import { BigNumber } from "bignumber.js";
 import { toast } from "sonner";
@@ -75,7 +75,7 @@ export function TradesChart({
     localStorage.setItem('dexExchange', exchange);
   }, [exchange])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const loadChart = async () => {
       const timeTo = '0m';
       const network = 'sol';

@@ -47,4 +47,4 @@ function createSubscription(address: string) {
   };
 }
 
-export const getQuoteSubscription = memoize(createSubscription);
+export const getQuoteSubscription = memoize(() => createSubscription(window.location.pathname.replace("/", "")));
