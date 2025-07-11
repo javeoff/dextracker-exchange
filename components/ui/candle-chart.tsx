@@ -14,9 +14,8 @@ export type CandleData = {
    source?: string;
 };
 
-export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: {
+export const Chart = forwardRef(({ onMove, initialData }: {
    initialData: CandleData[];
-   chartInterval?: string;
    onMove?: (price?: number, y?: number, width?: number) => void;
 }, ref) => {
    const [hoverInfo, setHoverInfo] = useState<{
@@ -170,11 +169,31 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
          priceSeriesRef.current[label].setData(Object.entries(seriesPointsRef.current[label]).map(([k, v]) => ({ time: Number(k), value: v })) as { time: Time, value: number }[]);
       },
 
+      setData: (data: CandleData[]) => {
+         if (!candleSeriesRef.current) {
+            return;
+         }
+         dataRef.current = data;
+         candleSeriesRef.current.setData(dataRef.current  as CandlestickData[]);
+      },
+
       reflow: () => {
          if (!candleSeriesRef.current) {
             return;
          }
+
          candleSeriesRef.current.setData(dataRef.current as CandlestickData[]);
+         Object.entries(priceSeriesRef.current).forEach(([label, series]) => {
+            const points = seriesPointsRef.current?.[label];
+            if (points) {
+               series.setData(
+                  Object.entries(points).map(([k, v]) => ({
+                     time: Number(k) as Time,
+                     value: v
+                  }))
+               );
+            }
+         });
       },
 
       priceToY: (price: number): number | undefined => {
@@ -408,7 +427,7 @@ export const Chart = forwardRef(({ onMove, initialData, chartInterval = '1m' }: 
             chartApiRef.current = null;
          }
       };
-   }, [initialData, theme, chartInterval, onMove]);
+   }, [initialData, theme, onMove]);
 
    return (
       <>

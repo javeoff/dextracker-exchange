@@ -1,12 +1,12 @@
 ﻿"use client"
 
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { CirclePlusIcon, XIcon } from "lucide-react";
 import { BigNumber } from "bignumber.js";
 import { toast } from "sonner";
 import { getBigNumber } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
-import { CandleData, Chart } from "./candle-chart";
+import { Chart } from "./candle-chart";
 import { formatPrice } from "./price-formatter";
 import { Button } from "./button";
 import { SelectValue, SelectContent, SelectItem, SelectTrigger, Select } from "@/components/ui/select";
@@ -63,7 +63,6 @@ export function TradesChart({
   getDepthVolume,
 }: Props) {
   const [exchanges, setExchanges] = useState(new Set<string>());
-  const [initialData, setInitialData] = useState<CandleData[]>([]);
   const availableExchangesRef = useRef<Set<string>>(new Set())
   const [timeframe, setTimeframe] = useState<'1m' | '5m' | '15m' | '1h'>('1m');
   // eslint-disable-next-line 
@@ -77,26 +76,28 @@ export function TradesChart({
   }, [exchange])
 
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const loadChart = async () => {
       const timeTo = '0m';
       const network = 'sol';
-      const res = await fetch(`https://api.cryptoscan.pro/chart?address=${symbol}&network=${network}&timeTo=${timeTo}`)
+      const res = await fetch(`https://api.cryptoscan.pro/chart?address=${symbol}&network=${network}&timeTo=${timeTo}&timeframe=${timeframe}`)
       const data = await res.json();
-      setInitialData(
-        data.map((d: Record<string, number | string>) => ({
-          ...d,
-          time: Math.floor(Number(d.time) / 1000),
-          open: Number(d.open),
-          close: Number(d.close),
-          high: Number(d.high),
-          low: Number(d.low),
-          volume: Number(d.volume),
-        }))
-      );
+      const newData = data.map((d: Record<string, number | string>) => ({
+        ...d,
+        time: Math.floor(Number(d.time) / 1000),
+        open: Number(d.open),
+        close: Number(d.close),
+        high: Number(d.high),
+        low: Number(d.low),
+        volume: Number(d.volume),
+      }))
+      // setInitialData((prev) => !prev ? newData : prev);
+      chartRef.current.setData(newData)
+      chartRef.current.reflow();
+      // chartRef.current.reflow()
     }
     loadChart();
-  }, [symbol])
+  }, [symbol, timeframe])
 
   useEffect(() => {
     if (!chartRef.current) {
@@ -340,8 +341,7 @@ export function TradesChart({
       <div className="overflow-hidden relative bottom-5">
         <Chart
           ref={chartRef}
-          initialData={initialData}
-          chartInterval={timeframe}
+          initialData={[]}
           onMove={onMove}
         />
         <ChartLabel
