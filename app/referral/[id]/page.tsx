@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Copy } from "lucide-react";
+import { CircleDollarSignIcon, CloverIcon, Copy } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RefInfo } from "@/components/ref-info";
@@ -25,29 +25,41 @@ export default function Home() {
           <Card className="bg-transparent border-none shadow-none">
             <CardContent className="p-6 space-y-4">
               <div className="text-sm text-muted-foreground">📩 Your referral code</div>
-              <div className="w-max flex items-center gap-2 bg-muted p-1 px-2 rounded-lg text-lg font-semibold">
+              <div className="w-max flex items-center gap-2 bg-muted/60 dark:bg-input/30 p-1 px-2 rounded-lg text-lg font-semibold">
                 {refCode}
-                <Button size="icon" variant="ghost">
+                <Button size="icon" variant="ghost" className="cursor-pointer">
                   <Copy className="w-4 h-4" />
                 </Button>
               </div>
 
               <div className="text-sm text-muted-foreground">💰 Share and Earn</div>
-              <div className="w-full md:max-w-xs flex items-center gap-2 bg-muted px-2 py-1 rounded-lg text-sm break-all">
+              <div className="w-full md:max-w-xs flex items-center justify-between gap-2 bg-muted/60 dark:bg-input/30 px-2 py-1 rounded-lg text-sm break-all">
                 <div className="truncate">
                   https://cryptoscan.pro?ref={refCode}
                 </div>
-                <Button size="icon" variant="ghost">
+                <Button size="icon" variant="ghost" className="cursor-pointer">
                   <Copy className="w-4 h-4" />
                 </Button>
               </div>
 
               <div className="text-sm w-full md:max-w-xs">
-                <div className="font-medium mb-1">Earn commission by sharing any link with a referral code on the address bar.</div>
+                <div className="font-medium mb-1 flex items-center gap-2">
+                  <div className="w-7 h-7">
+                    <CircleDollarSignIcon className="text-blue-400" />
+                  </div>
+                  Just 100 active traders ≈ $200.000 in monthly trading volume = $400 in earnings.
+                </div>
+                <div className="font-medium mb-1"></div>
+                <div className="font-medium mb-1 flex items-center gap-2">
+                  <div className="w-7 h-7">
+                    <CloverIcon className="text-green-400" />
+                  </div>
+                  Extra +$400 reward for weekly roulette by your link
+                </div>
               </div>
 
               <div className="flex flex-col gap-1">
-                <Button className="w-full mt-2" variant="outline">
+                <Button className="w-full mt-2 bg-background/40 cursor-pointer" variant="outline">
                   View Tutorial
                 </Button>
                 <Button className="w-full mt-2" disabled={true}>
@@ -74,7 +86,7 @@ export default function Home() {
             </div>
           </div>
           <div>
-          <RefInfo />
+            <RefInfo />
           </div>
         </div>
 

@@ -20,7 +20,7 @@ export function useReferral() {
       const res = await fetch("https://api.cryptoscan.pro/ref/login", {
         method: "POST",
         body: JSON.stringify({
-          walletAddress: publicKey.toString(),
+          address: publicKey.toString(),
           refId: currentRef,
         }),
       });
