@@ -7,6 +7,7 @@ import { RewardCountdown } from "./reward-countdown";
 import { Separator } from "./ui/separator";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { Copy } from "lucide-react";
 
 interface WalletInfo {
   address: string;
@@ -52,17 +53,43 @@ export function RefInfo() {
   }
   return (
     <div>
-      <div className="flex justify-between gap-10">
+      <div className="flex justify-between gap-5">
         <div className="flex-1 bg-input/20 rounded-md px-4 py-2 border">
           <div className="text-md font-semibold">
-            <span className="text-lg mr-1">#{refInfo.volumeTopPosition + 1}</span> {refInfo.refId}
+            <span className="text-lg mr-1">#{refInfo.volumeTopPosition + 1}</span>
+            {refInfo.refId}
+            <Button
+              size="icon"
+              variant="ghost"
+              className="cursor-pointer ml-2 w-6 h-6"
+              onClick={() => navigator.clipboard.writeText(refInfo.refId)}
+            >
+              <Copy />
+            </Button>
           </div>
-          <div className="text-sm flex flex-col gap-2 mt-2">
-            <div><span className="text-muted-foreground mr-2">Spin:</span> <span className="font-semibold"><RewardCountdown targetDate={new Date(refInfo.rewardAt)} /></span></div>
-            <div><span className="text-muted-foreground mr-2">Reward:</span> <span className="font-semibold">{refInfo.reward.toFixed(3)} SOL (${getBigNumber(refInfo.rewardUsd)})</span></div>
-            {refInfo.volumeTopPosition < 10 && <div><span className="dark:text-yellow-300 text-yellow-500 mr-2">Top 10:</span> <span className="font-semibold">+{refInfo.topReward.toFixed(3)} SOL (${getBigNumber(refInfo.topReward)})</span></div>}
-            <div><span className="text-muted-foreground mr-2">Volume:</span><span className="font-semibold">{refInfo.totalVolume.toFixed(3)} SOL (${getBigNumber(refInfo.totalVolumeUsd)})</span></div>
-            <div><span className="text-muted-foreground mr-2">Traders:</span> <span className="font-semibold">{refInfo.tradersCount}</span></div>
+          <div className="text-sm flex flex-col gap-2 mt-2 w-full">
+            <div className="flex justify-between w-full">
+              <span className="text-muted-foreground mr-2">Spin:</span>
+              <span className="font-semibold"><RewardCountdown targetDate={new Date(refInfo.rewardAt)} /></span>
+            </div>
+            <div className="flex justify-between w-full">
+              <span className="text-muted-foreground mr-2">Reward:</span>
+              <span className="font-semibold">{refInfo.reward.toFixed(3)} SOL (${getBigNumber(refInfo.rewardUsd)})</span>
+            </div>
+            {refInfo.volumeTopPosition < 10 && (
+              <div className="flex justify-between w-full">
+                <span className="dark:text-yellow-300 text-yellow-500 mr-2">Top 10:</span>
+                <span className="font-semibold">+{refInfo.topReward.toFixed(3)} SOL (${getBigNumber(refInfo.topReward)})</span>
+              </div>
+            )}
+            <div className="flex justify-between w-full">
+              <span className="text-muted-foreground mr-2">Volume:</span>
+              <span className="font-semibold">{refInfo.totalVolume.toFixed(3)} SOL (${getBigNumber(refInfo.totalVolumeUsd)})</span>
+            </div>
+            <div className="flex justify-between w-full">
+              <span className="text-muted-foreground mr-2">Traders:</span>
+              <span className="font-semibold">{refInfo.tradersCount}</span>
+            </div>
           </div>
           <div className="mt-4 w-full">
             <Link href={`/?ref=${refInfo.refId}`}>
@@ -70,9 +97,20 @@ export function RefInfo() {
                 Start Trade
               </Button>
             </Link>
+            <div className="mt-2 text-xs h-8 border w-full flex items-center justify-between gap-2 bg-muted/60 dark:bg-input/30 p-1 px-2 rounded-lg text-lg text-foreground/70 truncate">
+              http://api.cryptoscan.pro/referral/{refInfo.refId}?ref={refInfo.refId}
+              <Button
+                size="icon"
+                variant="ghost"
+                className="cursor-pointer ml-2 w-6 h-6"
+                onClick={() => navigator.clipboard.writeText(`http://localhost:3000/referral/${refInfo.refId}?ref=${refInfo.refId}`!)}
+              >
+                <Copy className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
-        <div className="flex-1 bg-input/20 rounded-md px-4 py-2 border">
+        <div className="flex-2 bg-input/20 rounded-md px-4 py-2 border">
           <div className="text-md font-semibold">
             Previous Winners
           </div>
@@ -93,7 +131,7 @@ export function RefInfo() {
           {refInfo?.wallets.map((wallet, index) => (
             <tr key={wallet.address} className="border-t">
               <td className="py-2 pr-4 font-semibold text-xs text-center text-muted-foreground">
-                <div className="bg-background border rounded-md bg-input/30">
+                <div className="min-w-8 w-max bg-background border rounded-md bg-input/30">
                   #{index + 1}
                 </div>
               </td>

@@ -61,7 +61,12 @@ export default function Home() {
                     <div className="text-sm text-muted-foreground">📩 Your referral code</div>
                     <div className="w-max flex items-center gap-2 bg-muted/60 dark:bg-input/30 p-1 px-2 rounded-lg text-lg font-semibold">
                       {refCode}
-                      <Button size="icon" variant="ghost" className="cursor-pointer">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="cursor-pointer"
+                        onClick={refCode ? () => navigator.clipboard.writeText(refCode) : undefined}
+                      >
                         <Copy className="w-4 h-4" />
                       </Button>
                     </div>
@@ -71,7 +76,12 @@ export default function Home() {
                       <div className="truncate">
                         https://cryptoscan.pro?ref={refCode}
                       </div>
-                      <Button size="icon" variant="ghost" className="cursor-pointer">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="cursor-pointer"
+                        onClick={() => navigator.clipboard.writeText(`https://cryptoscan.pro?ref=${refCode}`)}
+                      >
                         <Copy className="w-4 h-4" />
                       </Button>
                     </div>
