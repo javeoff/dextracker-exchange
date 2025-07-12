@@ -154,7 +154,7 @@ export default function Home() {
                 <div className="text-xs text-muted-foreground">
                   {!sort && (
                     <div>
-                      <div>Top 10 referral links by traded volume referral links will reward 10% of traded fees volume from total platform value.</div>
+                      <div>Top 10 referral links by traded volume will reward 10% of traded fees volume from total platform value.</div>
                       <br />
                       <div><b>Example:</b> Your referral link in TOP-10 has <span className="text-blue-300">$10.000</span> volume and you buy{'&'}sell <span className="text-foreground">$1.000</span> one time.</div>
                       <div> You have <span className="text-foreground">10%</span> chance to earn <span className="text-green-300">$48</span>. Get <span className="text-foreground">$24</span> by referral link and <span className="text-foreground">$24</span> extra platform reward</div>
