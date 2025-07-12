@@ -3,6 +3,7 @@ import { forwardRef, useImperativeHandle, useRef, useEffect, useState } from "re
 import { formatPrice } from "./price-formatter";
 import { useTheme } from "next-themes";
 import { getBigNumber, getExchangeColor, getPrice } from "@/lib/utils";
+import { BigNumber } from "bignumber.js"
 
 export type CandleData = {
    time: number;
@@ -19,11 +20,13 @@ export const Chart = forwardRef(({ onMove, initialData }: {
    onMove?: (price?: number, y?: number, width?: number) => void;
 }, ref) => {
    const [hoverInfo, setHoverInfo] = useState<{
-      min?: number;
-      max?: number;
+      min: number;
+      max: number;
       volumeInUsd?: number;
+      close: number;
+      open: number;
       visible: boolean;
-   }>({ visible: false });
+   }>({ visible: true, min: 0, max: 0, close: 0, open: 0 });
    const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null);
    const dataRef = useRef<CandleData[]>(initialData || []);
    const priceSeriesRef = useRef<Record<string, ISeriesApi<'Line'>>>({});
@@ -36,6 +39,26 @@ export const Chart = forwardRef(({ onMove, initialData }: {
    const lastPriceLabelMap = useRef(new Map<string, string>());
    const lastPriceMap = useRef(new Map<string, string>());
    const { resolvedTheme: theme } = useTheme();
+
+   const updateHoverInfo = (time?: number) => {
+      const candle = time ? dataRef.current.find(c => c.time === time) : dataRef.current.at(-1);
+
+      if (!candle) {
+         setHoverInfo({ visible: false, min: 0, max: 0, open: 0, close: 0 });
+         return;
+      }
+
+      const volumeInUsd = candle.volume ? candle.volume : undefined;
+
+      setHoverInfo({
+         min: candle.low,
+         max: candle.high,
+         open: candle.open,
+         close: candle.close,
+         volumeInUsd,
+         visible: true,
+      });
+   }
 
    useImperativeHandle(ref, () => ({
       addPrice(price: number) {
@@ -72,6 +95,7 @@ export const Chart = forwardRef(({ onMove, initialData }: {
 
          dataRef.current = candles;
          candleSeriesRef.current.setData(candles as CandlestickData[]);
+         updateHoverInfo();
       },
       addLimitLine: (type: 'long' | 'short', amount: number, price: number) => {
          const label = `${type}${amount}${price}`;
@@ -167,7 +191,7 @@ export const Chart = forwardRef(({ onMove, initialData }: {
             return;
          }
          dataRef.current = data;
-         candleSeriesRef.current.setData(dataRef.current  as CandlestickData[]);
+         candleSeriesRef.current.setData(dataRef.current as CandlestickData[]);
       },
 
       reflow: () => {
@@ -386,34 +410,7 @@ export const Chart = forwardRef(({ onMove, initialData }: {
 
       });
 
-      chartApiRef.current.subscribeCrosshairMove((param) => {
-         console.log(param.time, param.seriesData, volumeSeriesRef.current, candleSeriesRef.current)
-         if (!param.seriesData || !volumeSeriesRef.current || !candleSeriesRef.current) {
-            setHoverInfo({ visible: false });
-            return;
-         }
-
-         const { low, high, close } = param.seriesData.get(candleSeriesRef.current) as {
-            open: number;
-            high: number;
-            low: number;
-            close: number;
-            volume?: number;
-         };
-         const { value: volume } = param.seriesData.get(volumeSeriesRef.current) as {
-            value: number;
-            time: number
-         };
-
-         const volumeInUsd = volume && close ? volume * close : undefined;
-
-         setHoverInfo({
-            min: low,
-            max: high,
-            volumeInUsd,
-            visible: true,
-         });
-      });
+      chartApiRef.current.subscribeCrosshairMove((param) => updateHoverInfo(param.time as number));
 
       return () => {
          if (chartApiRef.current) {
@@ -442,7 +439,7 @@ export const Chart = forwardRef(({ onMove, initialData }: {
             style={{
                gap: '5px',
                position: 'absolute',
-               top: 10,
+               top: 15,
                left: 0,
                padding: '8px',
                color: theme === 'dark' ? '#fff' : '#000',
@@ -453,9 +450,30 @@ export const Chart = forwardRef(({ onMove, initialData }: {
                zIndex: 10,
             }}
          >
-            <div className="text-foreground/80">Min: ${hoverInfo.min?.toFixed(6)}</div>
-            <div className="text-foreground/80">Max: ${hoverInfo.max?.toFixed(6)}</div>
-            {!!hoverInfo.volumeInUsd && (<div className="text-foreground/80">Volume: ${getBigNumber(hoverInfo.volumeInUsd)}</div>)}
+            <div className="text-foreground/80 flex gap-1">Min:
+               <span className={hoverInfo.close < hoverInfo.open ? 'text-red-500 dark:text-red-300' : 'text-green-500 dark:text-green-300'}>
+                  ${hoverInfo.min?.toFixed(6)}
+               </span>
+            </div>
+            <div className="text-foreground/80 flex gap-1">Max:
+               <span className={hoverInfo.close < hoverInfo.open ? 'text-red-500 dark:text-red-300' : 'text-green-500 dark:text-green-300'}>
+                  ${hoverInfo.max?.toFixed(6)}
+               </span>
+            </div>
+            <div className="text-foreground/80 flex gap-1">Change:
+               <span className={hoverInfo.close < hoverInfo.open ? 'text-red-500 dark:text-red-300' : 'text-green-500 dark:text-green-300'}>
+                  {(hoverInfo.open && hoverInfo.close)
+                     ? (new BigNumber(hoverInfo.open).div(hoverInfo.close).multipliedBy(100).minus(100).toFixed(2))
+                     : 0
+                  }%
+               </span>
+            </div>
+            {!!hoverInfo.volumeInUsd && (<div className="text-foreground/80 flex gap-1">
+               Volume:
+               <span className={hoverInfo.close < hoverInfo.open ? 'text-red-500 dark:text-red-300' : 'text-green-500 dark:text-green-300'}>
+                  ${getBigNumber(hoverInfo.volumeInUsd)}
+               </span>
+            </div>)}
          </div>
       </>
    );

@@ -68,11 +68,8 @@ export function CommandSearch({
 
 
   useEffect(() => {
-    if (!search) {
-      return;
-    }
     const loadSearch = async () => {
-      const res = await fetch('https://datapi.jup.ag/v1/assets/search?query=' + search)
+      const res = await fetch('https://datapi.jup.ag/v1/assets/search?query=' + (search || ''))
       const data = await res.json();
       setCoins(data)
     }
