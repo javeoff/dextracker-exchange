@@ -230,7 +230,7 @@ export function getVolumeTooltip(volume: number): string {
   return "Flea (<$1)";
 }
 
-export function getPrice(price: number, expanded = false): string {
+export function getPrice(price: number, type = 'basic'): string {
   if (!isFinite(price) || price <= 0) {
     return '';
   }
@@ -238,11 +238,11 @@ export function getPrice(price: number, expanded = false): string {
   const bn = new BigNumber(price);
 
   if (price >= 1) {
-    return bn.decimalPlaces(expanded ? 4 : 2, BigNumber.ROUND_DOWN).toString();
+    return bn.decimalPlaces(type === 'basic' ? 2: type === 'expanded' ? 4 : 1, BigNumber.ROUND_DOWN).toString();
   }
 
   if (price >= 0.01) {
-    return bn.decimalPlaces(expanded ? 6 : 4, BigNumber.ROUND_DOWN).toString();
+    return bn.decimalPlaces(type === 'basic' ? 4 : type === 'expanded' ? 6 : 2, BigNumber.ROUND_DOWN).toString();
   }
 
   const str = bn.toFixed();
@@ -250,11 +250,12 @@ export function getPrice(price: number, expanded = false): string {
 
   if (match) {
     const zeros = match[1].length;
-    const totalDigits = zeros + (expanded ? 10 : 6);
-    return bn.decimalPlaces(totalDigits, BigNumber.ROUND_DOWN).toString();
+    const digitsAfterZero = type === 'basic' ? 6 : type === 'expanded' ? 10 : 4;
+    const totalDecimals = zeros + digitsAfterZero;
+    return bn.decimalPlaces(totalDecimals, BigNumber.ROUND_DOWN).toString();
   }
 
-  return bn.toPrecision(expanded ? 12 : 6, BigNumber.ROUND_DOWN).toString();
+  return bn.toPrecision(type === 'basic' ? 6 : type === 'expanded' ? 12 : 4, BigNumber.ROUND_DOWN).toString();
 }
 
 export function getAgo(date: Date, isShort = false): string {

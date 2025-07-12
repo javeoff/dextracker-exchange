@@ -120,9 +120,10 @@ export function Swap({ exchange, setExchange }: { exchange: string | undefined; 
       if (!debouncedFromAmount || !toAddress || !Number.isFinite(Number(debouncedFromAmount))) {
         return;
       }
+      const a = Number(debouncedFromAmount)
       const params = new URLSearchParams({
         address: toAddress,
-        amount: getPrice(Number(debouncedFromAmount)),
+        amount: getPrice(fromAddress === SYMBOL_ADDRESSES.SOL ? a * 0.98 : a, 'short'),
       })
       if (fromAddress) {
         params.set('addressFrom', fromAddress)
