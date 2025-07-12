@@ -40,7 +40,7 @@ export function Header() {
             {theme === 'dark' && (
               <Image src={"/logo.png"} alt="logo" width={35} height={12} />
             )}
-            {theme !== 'dark' && (
+            {theme === 'light' && (
               <Image src={"/logo-white.png"} alt="logo" width={35} height={12} />
             )}
           </Link>

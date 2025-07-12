@@ -40,7 +40,7 @@ export default function RootLayout({
         <SidebarProvider>
           <ThemeProvider
             attribute="class"
-            defaultTheme="dark"
+            defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
