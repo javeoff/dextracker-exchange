@@ -79,17 +79,17 @@ export function RefInfo() {
             </div>
             <div className="flex justify-between w-full">
               <span className="text-muted-foreground mr-2">Reward:</span>
-              <span className="font-semibold">{refInfo.reward.toFixed(3)} SOL (${getBigNumber(refInfo.rewardUsd)})</span>
+              <span className="font-semibold">{refInfo.reward.toFixed(1)} SOL (${refInfo.rewardUsd.toFixed(3)})</span>
             </div>
             {refInfo.volumeTopPosition < 10 && (
               <div className="flex justify-between w-full">
                 <span className="dark:text-yellow-300 text-yellow-500 mr-2">Top 10:</span>
-                <span className="font-semibold">+{refInfo.topReward.toFixed(3)} SOL (${getBigNumber(refInfo.topReward)})</span>
+                <span className="font-semibold">+{refInfo.topReward.toFixed(1)} SOL (${refInfo.topReward.toFixed(3)})</span>
               </div>
             )}
             <div className="flex justify-between w-full">
               <span className="text-muted-foreground mr-2">Volume:</span>
-              <span className="font-semibold">{refInfo.totalVolume.toFixed(3)} SOL (${getBigNumber(refInfo.totalVolumeUsd)})</span>
+              <span className="font-semibold">{refInfo.totalVolume.toFixed(1)} SOL (${refInfo.totalVolumeUsd.toFixed(3)})</span>
             </div>
             <div className="flex justify-between w-full">
               <span className="text-muted-foreground mr-2">Traders:</span>
@@ -153,7 +153,7 @@ export function RefInfo() {
               <td className="py-2">{wallet.address.slice(0, 5)}...{wallet.address.slice(-5)}</td>
               <td className="py-2">{wallet.volume.toFixed(3)} SOL</td>
               <td className="py-2">${getBigNumber(wallet.volumeUsd)}</td>
-              <td className="py-2">{wallet.chance * 100}%</td>
+              <td className="py-2">{(wallet.chance * 100).toFixed(1)}%</td>
             </tr>
           ))}
         </tbody>
