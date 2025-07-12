@@ -317,3 +317,19 @@ export function formatTimeDifference(futureDate: Date, now: Date) {
     return `${seconds}s`;
   }
 }
+
+export const createDuration = (ms = false, fixed = 0): (() => string) => {
+    const now = new Date();
+  
+    return () => {
+      const milliseconds = Date.now() - now.getTime();
+
+      if (ms) {
+        return milliseconds.toFixed();
+      }
+
+      const seconds = milliseconds / 1_000;
+  
+      return seconds.toFixed(fixed);
+    };
+  };  

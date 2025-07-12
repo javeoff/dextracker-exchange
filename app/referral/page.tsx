@@ -12,6 +12,8 @@ import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { clusterApiUrl } from "@solana/web3.js";
 import WalletReferralInfo from "@/components/wallet-referral-info";
 import { RewardCountdown } from "@/components/reward-countdown";
+import { createDuration } from "@/lib/utils";
+import { track } from "@vercel/analytics";
 
 export default function Home() {
   const network = WalletAdapterNetwork.Mainnet;
@@ -27,8 +29,10 @@ export default function Home() {
 
   useEffect(() => {
     const load = async () => {
+      const getDuration = createDuration();
       const res = await fetch(`https://api.cryptoscan.pro/ref/list?sort=${sort}`);
       const data = await res.json();
+      track('trending', {}, { flags: [getDuration(), data?.length ? 'true' : 'false'] });
       const mapped = data.map((d: Record<string, string | number>) => {
         const registeredAt = new Date(d.registeredAt);
         const spinAt = new Date(registeredAt);
@@ -65,7 +69,10 @@ export default function Home() {
                         size="icon"
                         variant="ghost"
                         className="cursor-pointer"
-                        onClick={refCode ? () => navigator.clipboard.writeText(refCode) : undefined}
+                        onClick={refCode ? () => {
+                          track('ref save', {}, { flags: ['id', refCode] });
+                          navigator.clipboard.writeText(refCode)
+                        } : undefined}
                       >
                         <Copy className="w-4 h-4" />
                       </Button>
@@ -80,7 +87,12 @@ export default function Home() {
                         size="icon"
                         variant="ghost"
                         className="cursor-pointer"
-                        onClick={() => navigator.clipboard.writeText(`https://cryptoscan.pro?ref=${refCode}`)}
+                        onClick={() => {
+                          if (refCode) {
+                            track('ref save', {}, { flags: ['link', refCode] });
+                          }
+                          navigator.clipboard.writeText(`https://cryptoscan.pro?ref=${refCode}`)
+                        }}
                       >
                         <Copy className="w-4 h-4" />
                       </Button>
@@ -209,12 +221,26 @@ export default function Home() {
                         <td className="py-2 pr-4">${(row.topRewardUsd || 0).toFixed(3)}</td>
                         <td className="py-2 pr-4 flex gap-2">
                           <Link href={`/referral/${row.refId}`}>
-                            <Button size="sm" variant="outline" className="cursor-pointer">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="cursor-pointer"
+                              onClick={() => {
+                                track('ref overview');
+                              }}
+                            >
                               Overview
                             </Button>
                           </Link>
                           <Link href={`/?ref=${row.refId}`}>
-                            <Button size="sm" variant="outline" className="cursor-pointer">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="cursor-pointer"
+                              onClick={() => {
+                                track('ref trade');
+                              }}
+                            >
                               Trade
                             </Button>
                           </Link>

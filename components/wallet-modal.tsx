@@ -15,6 +15,7 @@ import { Wallet } from "lucide-react";
 import { WalletListItem } from "./wallet-list-item";
 import { MoreWalletsButton } from "./more-wallets-button";
 import { NoWalletsFound } from "./no-wallets-found";
+import { track } from "@vercel/analytics";
 
 export function WalletModal() {
   const { wallets, select } = useWallet();
@@ -70,7 +71,10 @@ export function WalletModal() {
                   <WalletListItem
                     key={wallet.adapter.name}
                     wallet={wallet}
-                    handleClick={() => handleWalletClick(wallet.adapter.name)}
+                    handleClick={() => {
+                      track('connect wallet', {}, { flags: [wallet.adapter.name] });
+                      handleWalletClick(wallet.adapter.name)
+                    }}
                   />
                 ))}
             </>

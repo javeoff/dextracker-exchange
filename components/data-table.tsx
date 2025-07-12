@@ -1,29 +1,30 @@
 "use client"
 
 import {
-    ColumnDef,
-    ColumnFiltersState,
-    FilterFn,
-    flexRender,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getSortedRowModel,
-    SortingState,
-    useReactTable,
+  ColumnDef,
+  ColumnFiltersState,
+  FilterFn,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
 } from "@tanstack/react-table"
 import { useRouter } from "next/navigation"
 
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table"
 import React from "react"
 import { Skeleton } from "./ui/skeleton"
 import { cn } from "@/lib/utils"
+import { track } from "@vercel/analytics"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -139,9 +140,10 @@ export function DataTable<TData, TValue>({
                 key={row.id}
                 className="group hover:cursor-pointer"
                 data-state={row.getIsSelected() && "selected"}
-                onClick={() =>
+                onClick={() => {
+                  track('token open', {}, { flags: ['trending'] });
                   router.push(`/${(row.original as { address: string }).address}?ref=${new URLSearchParams(window.location.search).get('ref')}`)
-                }
+                }}
               >
                 {row.getVisibleCells().map((cell, colIndex) => {
                   const isFirst = colIndex === 0;
@@ -168,6 +170,6 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
-    </div>
+    </div >
   )
 }

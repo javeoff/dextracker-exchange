@@ -1,9 +1,10 @@
 "use client";
 
 import { ActivityIcon, SettingsIcon, SlidersHorizontalIcon, SparklesIcon, WalletIcon } from "lucide-react";
+import { track } from '@vercel/analytics';
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
-import { ADDRESS_SYMBOLS, getBigNumber, getPrice, SYMBOL_ADDRESSES } from "@/lib/utils";
+import { ADDRESS_SYMBOLS, createDuration, getBigNumber, getPrice, SYMBOL_ADDRESSES } from "@/lib/utils";
 import { ChangeIcon } from "./ui/change-icon";
 import { useState, useEffect, useMemo, Suspense, Dispatch, SetStateAction } from "react";
 import { getQuoteSubscription } from "@/lib/getQuoteSubscription";
@@ -138,8 +139,10 @@ export function Swap({ exchange, setExchange }: { exchange: string | undefined; 
       if (ref) {
         params.set('ref', ref)
       }
+      const getDuration = createDuration()
       const res = await fetch(`https://api.cryptoscan.pro/swap?${params}`)
       const data = await res.json();
+      track('quote', {}, { flags: [getDuration(), data?.price ? 'true' : 'false'] });
       const price = data.price;
       setInputUsd(data.inputUsd)
       setOutputUsd(data.outUsd)
@@ -191,7 +194,7 @@ export function Swap({ exchange, setExchange }: { exchange: string | undefined; 
       const transaction = VersionedTransaction.deserialize(txnBuffer);
       const signedTransaction = await signTransaction!(transaction);
 
-
+      const getDuration = createDuration();
       const request = fetch("https://api.cryptoscan.pro/swap", {
         method: "POST",
         headers: {
@@ -212,6 +215,7 @@ export function Swap({ exchange, setExchange }: { exchange: string | undefined; 
       const response = await request;
 
       const result = await response.json();
+      track('swap', {}, { flags: [getDuration(), result?.txn ? 'true' : 'false'] });
       getBalances(publicKey.toString()).then(setBalances)
       console.log("Swap submitted:", result);
     } catch (error) {

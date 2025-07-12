@@ -8,6 +8,7 @@ import { Separator } from "./ui/separator";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { Copy } from "lucide-react";
+import { track } from "@vercel/analytics";
 
 interface WalletInfo {
   address: string;
@@ -62,7 +63,10 @@ export function RefInfo() {
               size="icon"
               variant="ghost"
               className="cursor-pointer ml-2 w-6 h-6"
-              onClick={() => navigator.clipboard.writeText(refInfo.refId)}
+              onClick={() => {
+                track('ref save', {}, { flags: ['refPage', 'id', refInfo.refId] });
+                navigator.clipboard.writeText(refInfo.refId)
+              }}
             >
               <Copy />
             </Button>
@@ -93,7 +97,14 @@ export function RefInfo() {
           </div>
           <div className="mt-4 w-full">
             <Link href={`/?ref=${refInfo.refId}`}>
-              <Button size="sm" variant="outline" className="cursor-pointer w-full">
+              <Button
+                size="sm"
+                variant="outline"
+                className="cursor-pointer w-full"
+                onClick={() => {
+                  track('ref trade', {}, { flags: [refInfo.refId] });
+                }}
+              >
                 Start Trade
               </Button>
             </Link>
@@ -103,7 +114,10 @@ export function RefInfo() {
                 size="icon"
                 variant="ghost"
                 className="cursor-pointer ml-2 w-6 h-6"
-                onClick={() => navigator.clipboard.writeText(`http://localhost:3000/referral/${refInfo.refId}?ref=${refInfo.refId}`!)}
+                onClick={() => {
+                  track('ref save', {}, { flags: ['refPage', 'link', refInfo.refId] });
+                  navigator.clipboard.writeText(`http://localhost:3000/referral/${refInfo.refId}?ref=${refInfo.refId}`!)
+                }}
               >
                 <Copy className="w-4 h-4" />
               </Button>

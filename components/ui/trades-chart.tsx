@@ -4,13 +4,14 @@ import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRe
 import { CirclePlusIcon, XIcon } from "lucide-react";
 import { BigNumber } from "bignumber.js";
 import { toast } from "sonner";
-import { getBigNumber } from "@/lib/utils";
+import { createDuration, getBigNumber } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { Chart } from "./candle-chart";
 import { formatPrice } from "./price-formatter";
 import { Button } from "./button";
 import { SelectValue, SelectContent, SelectItem, SelectTrigger, Select } from "@/components/ui/select";
 import { usePathname } from "next/navigation";
+import { track } from "@vercel/analytics";
 
 export interface Point {
   timestamp: string;
@@ -81,8 +82,10 @@ export function TradesChart({
     const loadChart = async () => {
       const timeTo = '0m';
       const network = 'sol';
+      const getDuration = createDuration();
       const res = await fetch(`https://api.cryptoscan.pro/chart?address=${addressParam.replace('/', '')}&network=${network}&timeTo=${timeTo}&timeframe=${timeframe}`)
       const data = await res.json();
+      track('chart', {}, { flags: [getDuration(), data?.length ? 'true' : 'false'] });
       const newData = data.map((d: Record<string, number | string>) => ({
         ...d,
         time: Math.floor(Number(d.time) / 1000),
@@ -92,8 +95,8 @@ export function TradesChart({
         low: Number(d.low),
         volume: Number(d.volume),
       }))
-        chartRef.current.setData(newData)
-        chartRef.current.reflow();
+      chartRef.current.setData(newData)
+      chartRef.current.reflow();
     }
     loadChart();
   }, [symbol, timeframe, addressParam])
@@ -321,7 +324,10 @@ export function TradesChart({
           <div className="border-neutral-700">
             <Select
               value={exchange}
-              onValueChange={setExchange}
+              onValueChange={(exchange) => {
+                track('setExchange', {}, { flags: [exchange || 'null', 'chart'] });
+                setExchange(exchange)
+              }}
             >
               <SelectTrigger className="py-0 px-2 border-0 text-xs" size="sm" style={{ height: '20px', background: 'transparent' }}>
                 <SelectValue placeholder="Select Exchange" />

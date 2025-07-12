@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { SubscribeData } from "./ui/trades-chart";
 import { getBigNumber } from "@/lib/utils";
+import { track } from "@vercel/analytics";
 
 interface Props {
   subscribe: (cb: (data: SubscribeData) => void) => void;
@@ -88,11 +89,14 @@ export function TradesStats({ subscribe, exchange, setExchange }: Props) {
       {Object.entries(stats).sort((a, b) => Math.abs(b[1].net) - Math.abs(a[1].net)).map(([key, stat]) => (
         <div key={key}>
           <div
-          className={"cursor-pointer select-none relative z-1 flex gap-1 items-center w-full text-xs bg-input/30 rounded-sm whitespace-nowrap hover:bg-input/50 border-input/30 h-7"}
+            className={"cursor-pointer select-none relative z-1 flex gap-1 items-center w-full text-xs bg-input/30 rounded-sm whitespace-nowrap hover:bg-input/50 border-input/30 h-7"}
             style={{
               border: exchange === stat.exchange ? "1px solid #a1c46e" : undefined
             }}
-            onClick={() => setExchange(stat.exchange)}
+            onClick={() => {
+              track('setExchange', {}, { flags: [stat.exchange || 'null', 'stats'] });
+              setExchange(stat.exchange)
+            }}
           >
             <div className="px-2">
               {stat.exchange}
@@ -114,7 +118,8 @@ export function TradesStats({ subscribe, exchange, setExchange }: Props) {
             </div>
           </div>
         </div>
-      ))}
-    </div>
+      ))
+      }
+    </div >
   )
 }

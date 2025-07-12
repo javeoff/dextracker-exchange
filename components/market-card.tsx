@@ -5,6 +5,7 @@ import { SubscribeData } from "./ui/trades-chart";
 import { useEffect, useRef, useState } from "react";
 import { BigNumber } from "bignumber.js";
 import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
+import { track } from "@vercel/analytics";
 
 function percentDiff(a: number, b: number) {
   if (a === 0 || b === 0) return Infinity;
@@ -82,6 +83,7 @@ export function MarketCard({
         )
       }
       onClick={() => {
+        track('setExchange', {}, { flags: [exchange || 'null', 'card'] });
         setExchange(market.exchange !== exchange ? market.exchange : undefined)
       }}
     >
