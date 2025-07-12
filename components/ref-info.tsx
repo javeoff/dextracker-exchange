@@ -8,7 +8,7 @@ import { Separator } from "./ui/separator";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { Copy } from "lucide-react";
-import { track } from "@vercel/analytics";
+import { useLogger } from "next-axiom";
 
 interface WalletInfo {
   address: string;
@@ -33,6 +33,7 @@ interface RefInfo {
 }
 
 export function RefInfo() {
+  const log = useLogger();
   const refPathname = usePathname();
   const [refInfo, setRefInfo] = useState<RefInfo>();
 
@@ -64,7 +65,7 @@ export function RefInfo() {
               variant="ghost"
               className="cursor-pointer ml-2 w-6 h-6"
               onClick={() => {
-                track('ref save', {}, { flags: ['refPage', 'id', refInfo.refId] });
+                log.info('ref save', { flags: ['refPage', 'id', refInfo.refId] });
                 navigator.clipboard.writeText(refInfo.refId)
               }}
             >
@@ -102,7 +103,7 @@ export function RefInfo() {
                 variant="outline"
                 className="cursor-pointer w-full"
                 onClick={() => {
-                  track('ref trade', {}, { flags: [refInfo.refId] });
+                  log.info('ref trade', { flags: [refInfo.refId] });
                 }}
               >
                 Start Trade
@@ -115,7 +116,7 @@ export function RefInfo() {
                 variant="ghost"
                 className="cursor-pointer ml-2 w-6 h-6"
                 onClick={() => {
-                  track('ref save', {}, { flags: ['refPage', 'link', refInfo.refId] });
+                  log.info('ref save', { flags: ['refPage', 'link', refInfo.refId] });
                   navigator.clipboard.writeText(`http://localhost:3000/referral/${refInfo.refId}?ref=${refInfo.refId}`!)
                 }}
               >

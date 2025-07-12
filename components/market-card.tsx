@@ -5,7 +5,7 @@ import { SubscribeData } from "./ui/trades-chart";
 import { useEffect, useRef, useState } from "react";
 import { BigNumber } from "bignumber.js";
 import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
-import { track } from "@vercel/analytics";
+import { useLogger } from "next-axiom";
 
 function percentDiff(a: number, b: number) {
   if (a === 0 || b === 0) return Infinity;
@@ -29,6 +29,7 @@ export function MarketCard({
   fromSymbol: string | undefined;
   setExchange: React.Dispatch<React.SetStateAction<string | undefined>>;
 }) {
+  const log = useLogger();
   const exchangeType = getExchangeType(market.exchange);
   const exchangePrice = exchange ? markets[exchange]?.price : undefined;
   const minPrice = exchangePrice ? Math.min(market.price, exchangePrice) : undefined;
@@ -83,7 +84,7 @@ export function MarketCard({
         )
       }
       onClick={() => {
-        track('setExchange', {}, { flags: [exchange || 'null', 'card'] });
+        log.info('setExchange', { flags: [exchange || 'null', 'card'] });
         setExchange(market.exchange !== exchange ? market.exchange : undefined)
       }}
     >

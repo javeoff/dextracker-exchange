@@ -13,9 +13,10 @@ import { clusterApiUrl } from "@solana/web3.js";
 import WalletReferralInfo from "@/components/wallet-referral-info";
 import { RewardCountdown } from "@/components/reward-countdown";
 import { createDuration } from "@/lib/utils";
-import { track } from "@vercel/analytics";
+import { useLogger } from "next-axiom";
 
 export default function Home() {
+  const log = useLogger();
   const network = WalletAdapterNetwork.Mainnet;
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
   const [refs, setRefs] = useState<Referral[]>([]);
@@ -32,7 +33,7 @@ export default function Home() {
       const getDuration = createDuration();
       const res = await fetch(`https://api.cryptoscan.pro/ref/list?sort=${sort}`);
       const data = await res.json();
-      track('trending', {}, { flags: [getDuration(), data?.length ? 'true' : 'false'] });
+      log.info('trending', { flags: [getDuration(), data?.length ? 'true' : 'false'] });
       const mapped = data.map((d: Record<string, string | number>) => {
         const registeredAt = new Date(d.registeredAt);
         const spinAt = new Date(registeredAt);
@@ -70,7 +71,7 @@ export default function Home() {
                         variant="ghost"
                         className="cursor-pointer"
                         onClick={refCode ? () => {
-                          track('ref save', {}, { flags: ['id', refCode] });
+                          log.info('ref save', { flags: ['id', refCode] });
                           navigator.clipboard.writeText(refCode)
                         } : undefined}
                       >
@@ -89,7 +90,7 @@ export default function Home() {
                         className="cursor-pointer"
                         onClick={() => {
                           if (refCode) {
-                            track('ref save', {}, { flags: ['link', refCode] });
+                            log.info('ref save', { flags: ['link', refCode] });
                           }
                           navigator.clipboard.writeText(`https://cryptoscan.pro?ref=${refCode}`)
                         }}
@@ -226,7 +227,7 @@ export default function Home() {
                               variant="outline"
                               className="cursor-pointer"
                               onClick={() => {
-                                track('ref overview');
+                                log.info('ref overview');
                               }}
                             >
                               Overview
@@ -238,7 +239,7 @@ export default function Home() {
                               variant="outline"
                               className="cursor-pointer"
                               onClick={() => {
-                                track('ref trade');
+                                log.info('ref trade');
                               }}
                             >
                               Trade

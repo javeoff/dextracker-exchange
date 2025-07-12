@@ -15,9 +15,10 @@ import { Wallet } from "lucide-react";
 import { WalletListItem } from "./wallet-list-item";
 import { MoreWalletsButton } from "./more-wallets-button";
 import { NoWalletsFound } from "./no-wallets-found";
-import { track } from "@vercel/analytics";
+import { useLogger } from "next-axiom";
 
 export function WalletModal() {
+  const log = useLogger();
   const { wallets, select } = useWallet();
   const { visible, setVisible } = useWalletModal();
   const [expanded, setExpanded] = useState(false);
@@ -72,7 +73,7 @@ export function WalletModal() {
                     key={wallet.adapter.name}
                     wallet={wallet}
                     handleClick={() => {
-                      track('connect wallet', {}, { flags: [wallet.adapter.name] });
+                      log.info('connect wallet', { flags: [wallet.adapter.name] });
                       handleWalletClick(wallet.adapter.name)
                     }}
                   />

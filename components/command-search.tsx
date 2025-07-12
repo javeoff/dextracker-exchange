@@ -23,7 +23,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar"
 import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Coin } from "@/lib/types"
-import { track } from "@vercel/analytics"
+import { useLogger } from "next-axiom"
 
 export function CommandSearch({
   children,
@@ -35,6 +35,7 @@ export function CommandSearch({
   children?: ReactNode;
   onClick?: (coin: Coin) => void;
 }) {
+  const log = useLogger();
   const query = useSearchParams()
   const router = useRouter();
   const isMac = useIsMac()
@@ -103,7 +104,7 @@ export function CommandSearch({
         className="rounded-xl border-none bg-clip-padding p-2 pb-11 shadow-2xl ring-4 ring-neutral-200/80 dark:bg-neutral-900 dark:ring-neutral-800"
       >
         <DialogHeader className="sr-only" onClick={() => {
-          track('search open');
+          log.info('search open');
         }}>
           <DialogTitle>Search token or address...</DialogTitle>
           <DialogDescription>Search for a command to run...</DialogDescription>
@@ -126,7 +127,7 @@ export function CommandSearch({
                 value={coin.id}
                 className="cursor-pointer flex justify-between mt-2"
                 onSelect={() => {
-                  track('token open', {}, { flags: ['search'] });
+                  log.info('token open', { flags: ['search'] });
                   setOpen(false)
                   if (onClick) {
                     onClick(coin)

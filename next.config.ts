@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
+import { withAxiom } from "next-axiom";
 import "dotenv/config";
 
-const nextConfig: NextConfig = {
+const nextConfig: NextConfig = withAxiom({
 	webpack(config) {
 		config.module.rules.push({
 			test: /\.svg$/,
@@ -21,6 +22,6 @@ const nextConfig: NextConfig = {
 			},
 		],
 	},
-};
+});
 
 export default nextConfig;

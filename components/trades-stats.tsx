@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { SubscribeData } from "./ui/trades-chart";
 import { getBigNumber } from "@/lib/utils";
-import { track } from "@vercel/analytics";
+import { useLogger } from "next-axiom";
 
 interface Props {
   subscribe: (cb: (data: SubscribeData) => void) => void;
@@ -10,6 +10,7 @@ interface Props {
 }
 
 export function TradesStats({ subscribe, exchange, setExchange }: Props) {
+  const log = useLogger();
   const [stats, setStats] = useState<Record<string, {
     buys: number;
     sells: number;
@@ -94,7 +95,7 @@ export function TradesStats({ subscribe, exchange, setExchange }: Props) {
               border: exchange === stat.exchange ? "1px solid #a1c46e" : undefined
             }}
             onClick={() => {
-              track('setExchange', {}, { flags: [stat.exchange || 'null', 'stats'] });
+              log.info('setExchange', { flags: [stat.exchange || 'null', 'stats'] });
               setExchange(stat.exchange)
             }}
           >

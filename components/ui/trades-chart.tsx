@@ -11,7 +11,7 @@ import { formatPrice } from "./price-formatter";
 import { Button } from "./button";
 import { SelectValue, SelectContent, SelectItem, SelectTrigger, Select } from "@/components/ui/select";
 import { usePathname } from "next/navigation";
-import { track } from "@vercel/analytics";
+import { useLogger } from "next-axiom";
 
 export interface Point {
   timestamp: string;
@@ -64,6 +64,7 @@ export function TradesChart({
   subscribe,
   getDepthVolume,
 }: Props) {
+  const log = useLogger();
   const addressParam = usePathname();
   const [exchanges, setExchanges] = useState(new Set<string>());
   const availableExchangesRef = useRef<Set<string>>(new Set())
@@ -85,7 +86,7 @@ export function TradesChart({
       const getDuration = createDuration();
       const res = await fetch(`https://api.cryptoscan.pro/chart?address=${addressParam.replace('/', '')}&network=${network}&timeTo=${timeTo}&timeframe=${timeframe}`)
       const data = await res.json();
-      track('chart', {}, { flags: [getDuration(), data?.length ? 'true' : 'false'] });
+      log.info('chart', { flags: [getDuration(), data?.length ? 'true' : 'false'] });
       const newData = data.map((d: Record<string, number | string>) => ({
         ...d,
         time: Math.floor(Number(d.time) / 1000),
@@ -325,7 +326,7 @@ export function TradesChart({
             <Select
               value={exchange}
               onValueChange={(exchange) => {
-                track('setExchange', {}, { flags: [exchange || 'null', 'chart'] });
+                log.info('setExchange', { flags: [exchange || 'null', 'chart'] });
                 setExchange(exchange)
               }}
             >

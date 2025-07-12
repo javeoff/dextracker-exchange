@@ -1,7 +1,6 @@
 "use client";
 
 import { ActivityIcon, SettingsIcon, SlidersHorizontalIcon, SparklesIcon, WalletIcon } from "lucide-react";
-import { track } from '@vercel/analytics';
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import { ADDRESS_SYMBOLS, createDuration, getBigNumber, getPrice, SYMBOL_ADDRESSES } from "@/lib/utils";
@@ -22,6 +21,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader, Di
 import { Input } from "./ui/input";
 import { CommandSearch } from "./command-search";
 import { MarketCard } from "./market-card";
+import { useLogger } from "next-axiom";
 
 const getBalances = async (walletAddress: string) => {
   if (!walletAddress) {
@@ -34,6 +34,7 @@ const getBalances = async (walletAddress: string) => {
 }
 
 export function Swap({ exchange, setExchange }: { exchange: string | undefined; setExchange: Dispatch<SetStateAction<string | undefined>> }) {
+  const log = useLogger();
   const [modalOpen, setModalOpen] = useState(false);
   const [slippage, setSlippage] = useState<string>();
   const [priorityFee, setPriorityFee] = useState<string>();
@@ -142,7 +143,7 @@ export function Swap({ exchange, setExchange }: { exchange: string | undefined; 
       const getDuration = createDuration()
       const res = await fetch(`https://api.cryptoscan.pro/swap?${params}`)
       const data = await res.json();
-      track('quote', {}, { flags: [getDuration(), data?.price ? 'true' : 'false'] });
+      log.info('quote', { flags: [getDuration(), data?.price ? 'true' : 'false'] });
       const price = data.price;
       setInputUsd(data.inputUsd)
       setOutputUsd(data.outUsd)
@@ -215,7 +216,7 @@ export function Swap({ exchange, setExchange }: { exchange: string | undefined; 
       const response = await request;
 
       const result = await response.json();
-      track('swap', {}, { flags: [getDuration(), result?.txn ? 'true' : 'false'] });
+      log.info('swap', { flags: [getDuration(), result?.txn ? 'true' : 'false'] });
       getBalances(publicKey.toString()).then(setBalances)
       console.log("Swap submitted:", result);
     } catch (error) {

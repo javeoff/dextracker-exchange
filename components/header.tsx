@@ -22,9 +22,10 @@ import {
 import { useTheme } from "next-themes";
 import { Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { track } from "@vercel/analytics";
+import { useLogger } from "next-axiom";
 
 export function Header() {
+  const log = useLogger();
   const { resolvedTheme: theme } = useTheme();
   const pathname = usePathname();
   const network = WalletAdapterNetwork.Mainnet;
@@ -121,7 +122,7 @@ export function Header() {
               size="icon"
               className="absolute top-[1px] rainbow-border-inner left-[1px] border-none h-[31px] w-[31px] dark:bg-[#151515] dark:hover:bg-[#1d1d1d] cursor-pointer"
               onClick={() => {
-                track('gift click');
+                log.info('gift click');
               }}
             >
               <Gift className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all" />

@@ -24,7 +24,7 @@ import {
 import React from "react"
 import { Skeleton } from "./ui/skeleton"
 import { cn } from "@/lib/utils"
-import { track } from "@vercel/analytics"
+import { useLogger } from "next-axiom"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -47,6 +47,7 @@ export function DataTable<TData, TValue>({
   storageKey,
 }: DataTableProps<TData, TValue>) {
   const router = useRouter();
+  const log = useLogger();
 
   const loadFromStorage = <T,>(key: string, fallback: T): T => {
     if (typeof window === "undefined" || !storageKey) return fallback;
@@ -141,7 +142,7 @@ export function DataTable<TData, TValue>({
                 className="group hover:cursor-pointer"
                 data-state={row.getIsSelected() && "selected"}
                 onClick={() => {
-                  track('token open', {}, { flags: ['trending'] });
+                  log.info('token open', { flags: ['trending'] });
                   router.push(`/${(row.original as { address: string }).address}?ref=${new URLSearchParams(window.location.search).get('ref')}`)
                 }}
               >
