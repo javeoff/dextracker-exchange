@@ -103,7 +103,7 @@ export function MarketCard({
         </div>
         <div>
           <div className="text-xs font-bold flex gap-1 items-center">
-            ${getPrice(market.price, true)}
+            ${getPrice(market.price, 'expanded')}
             {' '}
             {exchange && !!markets[exchange] && (
               <span className="font-medium text-muted-foreground">
