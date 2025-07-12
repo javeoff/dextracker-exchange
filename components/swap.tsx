@@ -45,7 +45,7 @@ export function Swap({ exchange, setExchange }: { exchange: string | undefined; 
   const publicKey = getWallet()?.publicKey || _publicKey;
   const [symbol, setSymbol] = useState<string>();
   const [markets, setMarkets] = useState<Record<string, SubscribeData>>({});
-  const { subscribe } = getQuoteSubscription();
+  const { subscribe } = getQuoteSubscription(window.location.pathname.replace("/", ""));
   const [fromAmount, setFromAmount] = useState<string>();
   const [toAmount, setToAmount] = useState<string>();
   const query = useSearchParams();

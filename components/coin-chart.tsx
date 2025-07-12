@@ -5,12 +5,14 @@ import { TradesStats } from './trades-stats';
 import { TradesTable } from './trades-table';
 import { getQuoteSubscription } from '@/lib/getQuoteSubscription';
 import { Dispatch, SetStateAction } from 'react';
+import { usePathname } from 'next/navigation';
 
 export function CoinChart({ exchange, setExchange }: {
   exchange: string | undefined
   setExchange: Dispatch<SetStateAction<string | undefined>>
 }) {
-  const { subscribe } = getQuoteSubscription()
+  const pathname = usePathname();
+  const { subscribe } = getQuoteSubscription(pathname.replace("/", ""))
 
   return (
     <>

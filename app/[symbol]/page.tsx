@@ -13,10 +13,11 @@ import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { clusterApiUrl } from "@solana/web3.js";
 import { cn, getBigNumber } from "@/lib/utils";
 import { Coin } from "@/lib/types";
-
-const { subscribe } = getQuoteSubscription();
+import { usePathname } from "next/navigation";
 
 export default function Page() {
+  const pathname = usePathname();
+  const { subscribe } = getQuoteSubscription(pathname.replace("/", ""));
   const network = WalletAdapterNetwork.Mainnet;
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
   const [exchange, setExchange] = useState<string>();

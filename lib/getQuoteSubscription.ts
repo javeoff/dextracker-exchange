@@ -10,11 +10,9 @@ function createSubscription(address: string) {
 
   ws.onmessage = (msg) => {
     const data = JSON.parse(msg.data);
-    console.log('data1', data)
 
     if ('coins' in data) {
       const coin = (data.coins as Coin[]).sort((a, b) => b.liquidity - a.liquidity)[0];
-      console.log('coin', coin);
       localStorage.setItem('symbol', coin.symbol);
       localStorage.setItem('dexAddress', coin.address);
     }
@@ -47,4 +45,4 @@ function createSubscription(address: string) {
   };
 }
 
-export const getQuoteSubscription = memoize(() => createSubscription(window.location.pathname.replace("/", "")));
+export const getQuoteSubscription = memoize((pathname: string) => createSubscription(pathname));

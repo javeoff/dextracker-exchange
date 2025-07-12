@@ -1,6 +1,6 @@
 ﻿"use client"
 
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CirclePlusIcon, XIcon } from "lucide-react";
 import { BigNumber } from "bignumber.js";
 import { toast } from "sonner";
@@ -77,7 +77,7 @@ export function TradesChart({
     localStorage.setItem('dexExchange', exchange);
   }, [exchange])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const loadChart = async () => {
       const timeTo = '0m';
       const network = 'sol';
@@ -92,8 +92,8 @@ export function TradesChart({
         low: Number(d.low),
         volume: Number(d.volume),
       }))
-      chartRef.current.setData(newData)
-      chartRef.current.reflow();
+        chartRef.current.setData(newData)
+        chartRef.current.reflow();
     }
     loadChart();
   }, [symbol, timeframe, addressParam])
