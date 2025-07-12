@@ -10,6 +10,7 @@ import { Chart } from "./candle-chart";
 import { formatPrice } from "./price-formatter";
 import { Button } from "./button";
 import { SelectValue, SelectContent, SelectItem, SelectTrigger, Select } from "@/components/ui/select";
+import { usePathname } from "next/navigation";
 
 export interface Point {
   timestamp: string;
@@ -62,6 +63,7 @@ export function TradesChart({
   subscribe,
   getDepthVolume,
 }: Props) {
+  const addressParam = usePathname();
   const [exchanges, setExchanges] = useState(new Set<string>());
   const availableExchangesRef = useRef<Set<string>>(new Set())
   const [timeframe, setTimeframe] = useState<'1m' | '5m' | '15m' | '1h'>('1m');
@@ -79,7 +81,7 @@ export function TradesChart({
     const loadChart = async () => {
       const timeTo = '0m';
       const network = 'sol';
-      const res = await fetch(`https://api.cryptoscan.pro/chart?address=${symbol}&network=${network}&timeTo=${timeTo}&timeframe=${timeframe}`)
+      const res = await fetch(`https://api.cryptoscan.pro/chart?address=${addressParam.replace('/', '')}&network=${network}&timeTo=${timeTo}&timeframe=${timeframe}`)
       const data = await res.json();
       const newData = data.map((d: Record<string, number | string>) => ({
         ...d,
@@ -94,7 +96,7 @@ export function TradesChart({
       chartRef.current.reflow();
     }
     loadChart();
-  }, [symbol, timeframe])
+  }, [symbol, timeframe, addressParam])
 
   useEffect(() => {
     if (!chartRef.current) {
