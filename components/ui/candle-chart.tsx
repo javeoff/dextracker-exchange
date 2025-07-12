@@ -387,7 +387,8 @@ export const Chart = forwardRef(({ onMove, initialData }: {
       });
 
       chartApiRef.current.subscribeCrosshairMove((param) => {
-         if (!param.time || !param.seriesData || !volumeSeriesRef.current || !candleSeriesRef.current) {
+         console.log(param.time, param.seriesData, volumeSeriesRef.current, candleSeriesRef.current)
+         if (!param.seriesData || !volumeSeriesRef.current || !candleSeriesRef.current) {
             setHoverInfo({ visible: false });
             return;
          }
